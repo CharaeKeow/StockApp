@@ -1,36 +1,15 @@
 import * as React from 'react';
-import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-function Portfolio() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Portfolio</Text>
-    </View>
-  );
-}
-
-function Watchlist() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Watchlist!</Text>
-    </View>
-  );
-}
-
-function News() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>News</Text>
-    </View>
-  );
-}
+import News from './src/News';
+import Portfolio from './src/Portfolio';
+import Watchlist from './src/Watchlist';
 
 const Tab = createBottomTabNavigator();
 
-function MyTabs() {
+function BottomTab() {
   return (
     <Tab.Navigator
       initialRouteName="Portfolio"
@@ -72,10 +51,11 @@ function MyTabs() {
   );
 }
 
+
 export default function App() {
   return (
     <NavigationContainer>
-      <MyTabs />
+      <BottomTab />
     </NavigationContainer>
   );
 }
