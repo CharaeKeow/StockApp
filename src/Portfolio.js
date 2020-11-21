@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
+    fontSize: 30,
   }
 })
 
