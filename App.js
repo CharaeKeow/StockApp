@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 
-import News from './src/News';
-import Portfolio from './src/Portfolio';
-import Watchlist from './src/Watchlist';
+import NewsStackScreen from './src/News';
+import PortfolioStackScreen from './src/Portfolio';
+import WatchlistStackScreen from './src/Watchlist';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +19,7 @@ function BottomTab() {
     >
       <Tab.Screen
         name="Portfolio"
-        component={Portfolio}
+        component={PortfolioStackScreen}
         options={{
           tabBarLabel: 'Portfolio',
           tabBarIcon: ({ color, size }) => (
@@ -29,21 +29,22 @@ function BottomTab() {
       />
       <Tab.Screen
         name="Watchlist"
-        component={Watchlist}
+        component={WatchlistStackScreen}
         options={{
-          tabBarLabel: 'Updates',
+          tabBarLabel: 'Watchlist',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={size} />
+            <AntDesign name="star" color={color} size={size} />
           ),
         }}
       />
       <Tab.Screen
         name="News"
-        component={News}
+        component={NewsStackScreen}
         options={{
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="account" color={color} size={size} />
+            <MaterialCommunityIcons name="newspaper" size={size} color={color} />
+
           ),
         }}
       />
@@ -56,6 +57,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <BottomTab />
+
     </NavigationContainer>
   );
 }
