@@ -1,0 +1,68 @@
+{
+    "id": {
+      "one": {
+        "title": "APPL",
+        "fullname": "Apple Inc.",
+        "sector": "Technology",
+        "change": "+0.005",
+        "percentageChange": "+2.78",
+        "volume": "73,604,287",
+        "buy": "0.185",
+        "buyVolume": "227,027",
+        "sell": "0.190",
+        "sellVolume": "231,498",
+        "lacp": "0.180",
+        "open": "0.185",
+        "high": "0.195",
+        "low": "0.180"
+      },
+      "two": {
+        "title": "AMZN",
+        "sector": "Technology",
+        "fullname": "Amazon Inc.",
+        "change": "+0.005",
+        "percentageChange": "+2.78",
+        "volume": "73,604,287",
+        "buy": "0.185",
+        "buyVolume": "227,027",
+        "sell": "0.190",
+        "sellVolume": "231,498",
+        "lacp": "0.180",
+        "open": "0.185",
+        "high": "0.195",
+        "low": "0.180"
+      },
+      "three": {
+        "title": "TSLA",
+        "sector": "Automotive",
+        "fullname": "Tesla Inc",
+        "change": "+0.005",
+        "percentageChange": "+2.78",
+        "volume": "73,604,287",
+        "buy": "0.185",
+        "buyVolume": "227,027",
+        "sell": "0.190",
+        "sellVolume": "231,498",
+        "lacp": "0.180",
+        "open": "0.185",
+        "high": "0.195",
+        "low": "0.180"
+      },
+      "four": {
+        "title": "GOOG",
+        "fullname": "Google Inc.",
+        "sector": "Technology'",
+        "change": "+0.005",
+        "percentageChange": "+2.78",
+        "volume": "73,604,287",
+        "buy": "0.185",
+        "buyVolume": "227,027",
+        "sell": "0.190",
+        "sellVolume": "231,498",
+        "lacp": "0.180",
+        "open": "0.185",
+        "high": "0.195",
+        "low": "0.180"
+      }
+    }
+}

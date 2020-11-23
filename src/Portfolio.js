@@ -4,44 +4,110 @@ import { createStackNavigator } from '@react-navigation/stack'
 
 const DATA = [
   {
-    id: '00001',
-    title: 'APPL',
-    price: 'USD XXXX'
+    id: {
+      one: {
+        title: 'APPL',
+        fullname: 'Apple Inc.',
+        sector: 'Technology',
+        change: '+0.005',
+        percentageChange: '+2.78',
+        volume: '73,604,287',
+        buy: '0.185',
+        buyVolume: '227,027',
+        sell: '0.190',
+        sellVolume: '231,498',
+        lacp: '0.180',
+        open: '0.185',
+        high: '0.195',
+        low: '0.180'
+      },
+      two: {
+        title: 'AMZN',
+        sector: 'Technology',
+        fullname: 'Amazon Inc.',
+        change: '+0.005',
+        percentageChange: '+2.78',
+        volume: '73,604,287',
+        buy: '0.185',
+        buyVolume: '227,027',
+        sell: '0.190',
+        sellVolume: '231,498',
+        lacp: '0.180',
+        open: '0.185',
+        high: '0.195',
+        low: '0.180'
+      },
+      three: {
+        title: 'TSLA',
+        sector: 'Automotive',
+        fullname: 'Tesla Inc',
+        change: '+0.005',
+        percentageChange: '+2.78',
+        volume: '73,604,287',
+        buy: '0.185',
+        buyVolume: '227,027',
+        sell: '0.190',
+        sellVolume: '231,498',
+        lacp: '0.180',
+        open: '0.185',
+        high: '0.195',
+        low: '0.180'
+      },
+      four: {
+        title: 'GOOG',
+        fullname: 'Google Inc.',
+        sector: 'Technology',
+        change: '+0.005',
+        percentageChange: '+2.78',
+        volume: '73,604,287',
+        buy: '0.185',
+        buyVolume: '227,027',
+        sell: '0.190',
+        sellVolume: '231,498',
+        lacp: '0.180',
+        open: '0.185',
+        high: '0.195',
+        low: '0.180'
+      }
+    },
   },
-  {
-    id: '00002',
-    title: 'AMZN',
-    price: 'USD XXXX'
-  },
-  {
-    id: '00003',
-    title: 'TSLA',
-    price: 'USD XXXX'
-  },
-  {
-    id: '00004',
-    title: 'GOOG',
-    price: 'USD XXXX'
-  }
 ];
+
+const [selectedId, setSelectedId] = useSate(""); //for storing selected id on clicked flatlist
 
 const Item = ({ item, onPress, style }) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
-    <Text style={styles.title}>{item.title}</Text>
+    <View style={styles.container}>
+      <Text style={[styles.title, styles.header]}>{item.title}</Text>
+      <Text>{item.change}</Text>
+    </View>
   </TouchableOpacity>
 );
 
-function Portfolio() {
-  const [selectedId, setSelectedId] = React.useState(null);
+function DetailsScreen({ route }) {
+  const id = selectedId;
+
+  return (
+    <View>
+      <Text>{ }</Text>
+    </View>
+  )
+
+}
+
+function Portfolio({ navigation }) {
 
   const renderItem = ({ item }) => {
-    const backgroundColor = item.id === selectedId ? "#6e3b6e" : "#f9c2ff";
 
     return (
       <Item
         item={item}
-        onPress={() => setSelectedId(item.id)}
-        style={{ backgroundColor }}
+        onPress={() => {
+          navigation.navigate('Details', {
+            itemId: item.id
+          });
+          setSelectedId(item.id);
+        }}
       />
     )
   }
@@ -52,7 +118,6 @@ function Portfolio() {
         data={DATA}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        extraData={selectedId}
       />
     </View>
   );
@@ -66,7 +131,14 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
-    fontSize: 30,
+  },
+  container: {
+    flexDirection: "row",
+    justifyContent: "space-between"
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "400",
   }
 })
 
@@ -76,6 +148,7 @@ export default function PortfolioStackScreen() {
   return (
     <PortfolioStack.Navigator>
       <PortfolioStack.Screen name="Portfolio" component={Portfolio} />
+      <PortfolioStack.Screen name="Details" component={DetailsScreen} />
     </PortfolioStack.Navigator>
   )
 }
