@@ -1,79 +1,75 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
 
 const DATA = [
   {
-    id: {
-      one: {
-        title: 'APPL',
-        fullname: 'Apple Inc.',
-        sector: 'Technology',
-        change: '+0.005',
-        percentageChange: '+2.78',
-        volume: '73,604,287',
-        buy: '0.185',
-        buyVolume: '227,027',
-        sell: '0.190',
-        sellVolume: '231,498',
-        lacp: '0.180',
-        open: '0.185',
-        high: '0.195',
-        low: '0.180'
-      },
-      two: {
-        title: 'AMZN',
-        sector: 'Technology',
-        fullname: 'Amazon Inc.',
-        change: '+0.005',
-        percentageChange: '+2.78',
-        volume: '73,604,287',
-        buy: '0.185',
-        buyVolume: '227,027',
-        sell: '0.190',
-        sellVolume: '231,498',
-        lacp: '0.180',
-        open: '0.185',
-        high: '0.195',
-        low: '0.180'
-      },
-      three: {
-        title: 'TSLA',
-        sector: 'Automotive',
-        fullname: 'Tesla Inc',
-        change: '+0.005',
-        percentageChange: '+2.78',
-        volume: '73,604,287',
-        buy: '0.185',
-        buyVolume: '227,027',
-        sell: '0.190',
-        sellVolume: '231,498',
-        lacp: '0.180',
-        open: '0.185',
-        high: '0.195',
-        low: '0.180'
-      },
-      four: {
-        title: 'GOOG',
-        fullname: 'Google Inc.',
-        sector: 'Technology',
-        change: '+0.005',
-        percentageChange: '+2.78',
-        volume: '73,604,287',
-        buy: '0.185',
-        buyVolume: '227,027',
-        sell: '0.190',
-        sellVolume: '231,498',
-        lacp: '0.180',
-        open: '0.185',
-        high: '0.195',
-        low: '0.180'
-      }
-    },
+    id: '001',
+    title: 'APPL',
+    fullname: 'Apple Inc.',
+    sector: 'Technology',
+    change: '+0.005',
+    percentageChange: '+2.78',
+    volume: '73,604,287',
+    buy: '0.185',
+    buyVolume: '227,027',
+    sell: '0.190',
+    sellVolume: '231,498',
+    lacp: '0.180',
+    open: '0.185',
+    high: '0.195',
+    low: '0.180'
   },
+  {
+    id: '002',
+    title: 'AMZN',
+    sector: 'Technology',
+    fullname: 'Amazon Inc.',
+    change: '+0.005',
+    percentageChange: '+2.78',
+    volume: '73,604,287',
+    buy: '0.185',
+    buyVolume: '227,027',
+    sell: '0.190',
+    sellVolume: '231,498',
+    lacp: '0.180',
+    open: '0.185',
+    high: '0.195',
+    low: '0.180'
+  }, {
+    id: '003',
+    title: 'TSLA',
+    sector: 'Automotive',
+    fullname: 'Tesla Inc',
+    change: '+0.005',
+    percentageChange: '+2.78',
+    volume: '73,604,287',
+    buy: '0.185',
+    buyVolume: '227,027',
+    sell: '0.190',
+    sellVolume: '231,498',
+    lacp: '0.180',
+    open: '0.185',
+    high: '0.195',
+    low: '0.180'
+  }, {
+    id: '004',
+    title: 'GOOG',
+    fullname: 'Google Inc.',
+    sector: 'Technology',
+    change: '+0.005',
+    percentageChange: '+2.78',
+    volume: '73,604,287',
+    buy: '0.185',
+    buyVolume: '227,027',
+    sell: '0.190',
+    sellVolume: '231,498',
+    lacp: '0.180',
+    open: '0.185',
+    high: '0.195',
+    low: '0.180'
+  }
 ];
-
-const [selectedId, setSelectedId] = useSate(""); //for storing selected id on clicked flatlist
 
 const Item = ({ item, onPress, style }) => (
   <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
@@ -85,7 +81,6 @@ const Item = ({ item, onPress, style }) => (
 );
 
 function DetailsScreen({ route }) {
-  const id = selectedId;
 
   return (
     <View>
@@ -96,6 +91,7 @@ function DetailsScreen({ route }) {
 }
 
 function Portfolio({ navigation }) {
+  const [selectedId, setSelectedId] = React.useState(""); //for storing selected id on clicked flatlist
 
   const renderItem = ({ item }) => {
 
@@ -103,11 +99,12 @@ function Portfolio({ navigation }) {
       <Item
         item={item}
         onPress={() => {
-          navigation.navigate('Details', {
-            itemId: item.id
-          });
           setSelectedId(item.id);
-        }}
+          navigation.navigate('Details', {
+            itemid: selectedId,
+          });
+        }
+        }
       />
     )
   }
@@ -117,7 +114,8 @@ function Portfolio({ navigation }) {
       <FlatList
         data={DATA}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
+        extraData={selectedId}
       />
     </View>
   );
