@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useState } from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack'
@@ -81,17 +82,19 @@ const Item = ({ item, onPress, style }) => (
 );
 
 function DetailsScreen({ route }) {
+  const { itemId, obj } = route.params;
 
+  console.log(obj)
   return (
     <View>
-      <Text>{ }</Text>
+      <Text>{obj.fullname}</Text>
     </View>
   )
 
 }
 
 function Portfolio({ navigation }) {
-  const [selectedId, setSelectedId] = React.useState(""); //for storing selected id on clicked flatlist
+  const [selectedId, setSelectedId] = React.useState([]); //for storing selected id on clicked flatlist
 
   const renderItem = ({ item }) => {
 
@@ -101,7 +104,8 @@ function Portfolio({ navigation }) {
         onPress={() => {
           setSelectedId(item.id);
           navigation.navigate('Details', {
-            itemid: selectedId,
+            itemId: item.id,
+            obj: item, //objects of clicked element
           });
         }
         }
