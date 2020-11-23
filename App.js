@@ -5,9 +5,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 
-import NewsStackScreen from './src/News';
-import PortfolioStackScreen from './src/Portfolio';
-import WatchlistStackScreen from './src/Watchlist';
+import NewsStackScreen from './src/components/News';
+import PortfolioStackScreen from './src/components/Portfolio';
+import WatchlistStackScreen from './src/components/Watchlist';
 
 const Tab = createBottomTabNavigator();
 
