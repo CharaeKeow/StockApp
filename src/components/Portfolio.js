@@ -20,14 +20,14 @@ const DATA = [
     lacp: '0.180',
     open: '0.185',
     high: '0.195',
-    low: '0.180'
+    low: '0.180',
   },
   {
     id: '002',
     title: 'AMZN',
     sector: 'Technology',
     fullname: 'Amazon Inc.',
-    change: '+0.005',
+    change: '-0.002',
     percentageChange: '+2.78',
     volume: '73,604,287',
     buy: '0.185',
@@ -43,7 +43,7 @@ const DATA = [
     title: 'TSLA',
     sector: 'Automotive',
     fullname: 'Tesla Inc',
-    change: '+0.005',
+    change: '+0.125',
     percentageChange: '+2.78',
     volume: '73,604,287',
     buy: '0.185',
@@ -88,10 +88,10 @@ const DATA = [
     low: '0.180'
   }, {
     id: '006',
-    title: 'DEF',
-    fullname: 'DEF Inc.',
+    title: 'CIMB',
+    fullname: 'CIMB Bank',
     sector: 'Technology',
-    change: '+0.005',
+    change: '-0.015',
     percentageChange: '+2.78',
     volume: '73,604,287',
     buy: '0.185',
@@ -104,10 +104,10 @@ const DATA = [
     low: '0.180'
   }, {
     id: '007',
-    title: 'GHI',
-    fullname: 'GHI Inc.',
+    title: 'KANGER',
+    fullname: 'Kanger International Berhad',
     sector: 'Technology',
-    change: '+0.005',
+    change: '+0.225',
     percentageChange: '+2.78',
     volume: '73,604,287',
     buy: '0.185',
@@ -120,10 +120,10 @@ const DATA = [
     low: '0.180'
   }, {
     id: '008',
-    title: 'JKL',
-    fullname: 'JKL Inc.',
+    title: 'IRIS',
+    fullname: 'Iris Corporation Berhad',
     sector: 'Technology',
-    change: '+0.005',
+    change: '-0.215',
     percentageChange: '+2.78',
     volume: '73,604,287',
     buy: '0.185',
@@ -137,17 +137,32 @@ const DATA = [
   }
 ];
 
-const Item = ({ item, onPress, style }) => (
-  <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
-    <View style={styles.container}>
-      <Text style={[styles.title, styles.header]}>{item.title}</Text>
-      <Text>{item.change}</Text>
-    </View>
-  </TouchableOpacity>
-);
+/* For checking is the change of the stock is positive or negative, which will later
+   be used for assigning the right color to <Text> component to display the colour
+ */
+const isPositive = (val) => {
+  if (val.charAt(0) === '+') {
+    return true; //early exit if true
+  }
+  return false; //no else, default return false
+}
+
+const Item = ({ item, onPress, style }) => {
+
+  return (
+    < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
+      <View style={styles.container}>
+        <Text style={[styles.title, styles.header]}>{item.title}</Text>
+        {isPositive(item.change) ?
+          <Text style={{ color: 'green' }}>{item.change}</Text>
+          : <Text style={{ color: 'red' }}>{item.change}</Text>}
+      </View>
+    </TouchableOpacity >
+  );
+};
 
 function DetailsScreen({ route }) {
-  const { itemId, obj } = route.params;
+  const { obj } = route.params; //destructuring
 
   //destructure. Maybe it's cleaner this way
   const {
@@ -168,7 +183,7 @@ function DetailsScreen({ route }) {
   } = obj;
 
   return (
-    <View>
+    <View style={styles.detailsView}>
       <Text>Title: <Text>{title}</Text></Text>
       <Text>Name: <Text>{fullname}</Text></Text>
       <Text>Sector: <Text>{sector}</Text></Text>
@@ -188,43 +203,72 @@ function DetailsScreen({ route }) {
 }
 
 function Portfolio({ navigation }) {
-  const [selectedId, setSelectedId] = React.useState([]); //for storing selected id on clicked flatlist
-  const [search, setSearch] = React.useState(""); //for searchbar state
+  //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
+  const [search, setSearch] = useState(""); //for searchbar state
+  const [data, setData] = useState(DATA); //empty array to store list of items during query
+
+  //For handling query to filter the stock listed in portfolio
+  const handleSearch = (text) => {
+    const newData = data.filter(item => {
+      const itemData = item.fullname.toLowerCase();
+      const textData = text.toLowerCase();
+      return itemData.indexOf(textData) > -1;
+    });
+    setData(newData); //set new data into data
+    setSearch(text);
+  }
+
 
   const renderItem = ({ item }) => {
-
     return (
       <Item
         item={item}
+        style={styles.flatlist}
         onPress={() => {
-          setSelectedId(item.id);
+          //setSelectedId(item.id);
           navigation.navigate('Details', {
-            itemId: item.id,
+            //itemId: item.id,
             obj: item, //objects of clicked element
           });
-        }
-        }
+        }}
       />
-    )
+    );
   }
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <View style={styles.view}>
       <SearchBar
         placeholder="Search stock"
-        onChangeText={(text) => setSearch(text)}
+        onChangeText={
+          //(text) => { setSearch(text) }
+          //set arr = DATA obj upon clicking on this component. But think this is
+          //not the best idea because fulldata should contains element beforehand.
+          //Will refactor later
+          //setFullData(DATA);
+          (text) => handleSearch(text)
+        }
+        //To get the query string. Will be use to filter the flatlist locally
+        onSubmitEditing={(event) => {
+          let query = event.nativeEvent.text;
+          console.log(query);
+          //TODO: add query method to call
+        }}
         value={search}
         platform="android"
+        style={styles.searchBar}
       />
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        extraData={selectedId}
-      />
+      <View style={styles.stockView}>
+        <FlatList
+          //data={DATA}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        //extraData={selectedId}
+        />
+      </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   item: {
@@ -233,16 +277,41 @@ const styles = StyleSheet.create({
     width: 300,
     marginVertical: 8,
     marginHorizontal: 16,
+    //marginRight: 50,
     borderRadius: 10,
   },
   container: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   header: {
     fontSize: 20,
     fontWeight: "400",
-  }
+  },
+  flatlist: {
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    alignSelf: 'center',
+  },
+  view: {
+    flex: 1,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  stockView: {
+    width: '100%',
+    marginBottom: 60
+  },
+  searchBar: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  detailsView: {
+    backgroundColor: '#fff',
+    margin: 10,
+    padding: 10,
+  },
 })
 
 const PortfolioStack = createStackNavigator();
