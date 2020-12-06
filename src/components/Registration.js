@@ -1,8 +1,11 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import React from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import styles from '../styles/RegistrationLogin.style'
+
+import styles from '../styles/RegistrationLogin.style';
+import { firebase } from '../firebase/config';
 
 export default function Registration({ navigation }) {
   const [fullName, setFullName] = React.useState('');
@@ -15,7 +18,61 @@ export default function Registration({ navigation }) {
   }
 
   const onRegisterPress = () => {
+    if (password !== confirmPassword) { //alert password doesn't match
+      alert("Passwords do not match!");
+    } else {
 
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then((res) => {
+          res.user.updateProfile({
+            displayName: fullName,
+          })
+
+          //Send verification email
+          /* Disble for now as it is a bit hassle for testing
+          firebase.auth().currentUser.sendEmailVerification().then(() => {
+            console.log('Email sent');
+            //console.log(user);
+          });
+          */
+
+          console.log(res); //output user
+          alert('Succesfully created a new user');
+
+          const uid = res.user.uid; //get unique uid
+          console.log(uid);
+          const data = { //data for user node
+            uid,
+            email,
+            fullName,
+            password
+          };
+
+          firebase.database().ref('users/' + uid).set({
+            profile: data,
+          }).then(() => {
+
+          }
+          );
+        })
+        .catch((error) => {
+          console.log(error.toString(error))
+        });
+
+
+      //store user info in rdb after registration
+      //users/uid/profile:
+      //name
+      //password
+      //username
+      //email
+      firebase.database().ref('users/1').once('value').then((snapshot) => {
+        //console.log('Read from db');
+        //console.log(snapshot);
+      });
+    }
   }
 
   return (

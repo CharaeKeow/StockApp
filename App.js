@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import * as React from 'react';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
 
 import NewsStackScreen from './src/components/News';
@@ -10,11 +11,19 @@ import PortfolioStackScreen from './src/components/Portfolio';
 import WatchlistStackScreen from './src/components/Watchlist';
 import Registration from './src/components/Registration';
 import Login from './src/components/Login'
-import { createStackNavigator } from '@react-navigation/stack';
+import { firebase } from './src/firebase/config';
+import TimerErrorHandler from './src/utils/TimerErrorHandler';
+
+/*To suppress (hide) yellow warning due to firebase setting a long timer. It's just a warning and nothing
+ * can be done to fix it unless using a native Adroid firebase (which I plan to)
+ * So for now hiding it seems to be the best fix :)
+ * And this is for development only (I think)
+ */
+TimerErrorHandler();
 
 const Tab = createBottomTabNavigator();
 
-const isSignedIn = false; //set sign in to false for testing Login and Registration screens
+//const isSignedIn = false; //set sign in to false for testing Login and Registration screens
 
 function BottomTab() {
   return (
@@ -62,6 +71,11 @@ function BottomTab() {
 const Stack = createStackNavigator();
 
 export default function App() {
+  //manually set for now to easier testing the main UI
+  //will need to properly implement later as this one is extreme
+  //important
+  const [isSignedIn, setSignedIn] = React.useState(false);
+
   return (
     <NavigationContainer>
       {isSignedIn ? <BottomTab /> : (
