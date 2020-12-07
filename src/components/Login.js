@@ -7,7 +7,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import styles from '../styles/RegistrationLogin.style';
 import { firebase } from '../firebase/config';
 
-export default function Login({ navigation }) {
+export default function Login({ navigation
+}) {
   const [email, setEmail] = React.useState(''); //initial state null
   const [password, setPassword] = React.useState('');
 
@@ -30,9 +31,13 @@ export default function Login({ navigation }) {
         */
 
         alert(`Hi ${res.user.displayName}. Welcome back 😄`);
+
+        WriteAsyncStorage('Login');
+
+        console.log(ReadAsyncStorage());
+
       })
       .catch((error) => alert(error));
-
   }
 
   return (
