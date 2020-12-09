@@ -4,6 +4,8 @@ import React from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 //handle keyboard appearance and automatically scrolls to focused <TextInput>
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import styles from '../styles/RegistrationLogin.style';
 import { firebase } from '../firebase/config';
 
@@ -18,25 +20,23 @@ export default function Login({ navigation
 
   const onLoginPress = () => {
     firebase
-      .auth()
-      .signInWithEmailAndPassword(email, password)
-      .then((res) => {
-        /* Disable for now
-        if (!res.user.emailVerified) {
-          alert("Please verify your email first!");
-        } else {
-          console.log(res.user)
-          alert(`Hi ${res.user}. Welcome back 😄`);
-        }
-        */
+      .auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
+        return firebase.auth().signInWithEmailAndPassword(email, password)
+          .then((res) => {
+            // Disable for now
+            if (!res.user.emailVerified) {
+              //alert("Please verify your email first!");
+            } else {
+              //console.log(res.user)
+              //alert(`Hi ${res.user}. Welcome back 😄`);
+            }
+            //* /
 
-        alert(`Hi ${res.user.displayName}. Welcome back 😄`);
-
-        WriteAsyncStorage('Login');
-
-        console.log(ReadAsyncStorage());
-
+            alert(`Hi ${res.user.displayName}. Welcome back 😄`);
+          })
       })
+
+
       .catch((error) => alert(error));
   }
 

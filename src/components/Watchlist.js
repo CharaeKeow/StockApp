@@ -205,7 +205,7 @@ function Watchlist({ navigation }) {
         //To get the query string. Will be use to filter the flatlist locally
         onSubmitEditing={(event) => {
           let query = event.nativeEvent.text;
-          console.log(query);
+          //console.log(query);
           //TODO: add query method to call
         }}
         value={search}
@@ -269,7 +269,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 })
-
 
 export default function WatchlistStackScreen() {
   return (

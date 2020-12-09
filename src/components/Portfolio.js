@@ -1,161 +1,32 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
 
-const DATA = [
-  {
-    id: '001',
-    title: 'APPL',
-    fullname: 'Apple Inc.',
-    sector: 'Technology',
-    change: '+0.005',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180',
-  },
-  {
-    id: '002',
-    title: 'AMZN',
-    sector: 'Technology',
-    fullname: 'Amazon Inc.',
-    change: '-0.002',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '003',
-    title: 'TSLA',
-    sector: 'Automotive',
-    fullname: 'Tesla Inc',
-    change: '+0.125',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '004',
-    title: 'GOOG',
-    fullname: 'Google Inc.',
-    sector: 'Technology',
-    change: '+0.005',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '005',
-    title: 'ABC',
-    fullname: 'ABC Inc.',
-    sector: 'Technology',
-    change: '+0.005',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '006',
-    title: 'CIMB',
-    fullname: 'CIMB Bank',
-    sector: 'Technology',
-    change: '-0.015',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '007',
-    title: 'KANGER',
-    fullname: 'Kanger International Berhad',
-    sector: 'Technology',
-    change: '+0.225',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '008',
-    title: 'IRIS',
-    fullname: 'Iris Corporation Berhad',
-    sector: 'Technology',
-    change: '-0.215',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }
-];
+import { firebase } from '../firebase/config';
 
 /* For checking is the change of the stock is positive or negative, which will later
    be used for assigning the right color to <Text> component to display the colour
  */
+
+/*
 const isPositive = (val) => {
-  if (val.charAt(0) === '+') {
-    return true; //early exit if true
-  }
-  return false; //no else, default return false
+ if (val.charAt(0) === '+') {
+   return true; //early exit if true
+ }
+ return false; //no else, default return false
 }
+*/
 
 const Item = ({ item, onPress, style }) => {
 
   return (
     < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
       <View style={styles.container}>
-        <Text style={[styles.title, styles.header]}>{item.title}</Text>
-        {isPositive(item.change) ?
-          <Text style={{ color: 'green' }}>{item.change}</Text>
-          : <Text style={{ color: 'red' }}>{item.change}</Text>}
+        <Text style={[styles.title, styles.header]}>{item.sharesName}</Text>
+        <Text style={{ color: 'green' }}>{item.sentiValue}</Text>
+        <Text>{item.bbStatus}</Text>
       </View>
     </TouchableOpacity >
   );
@@ -164,48 +35,68 @@ const Item = ({ item, onPress, style }) => {
 function DetailsScreen({ route }) {
   const { obj } = route.params; //destructuring
 
-  //destructure. Maybe it's cleaner this way
   const {
-    title,
-    fullname,
-    sector,
-    change,
-    percentageChange,
-    volume,
-    buy,
-    buyVolume,
-    sell,
-    sellVolume,
-    lacp,
-    open,
-    high,
-    low
+    id,
+    bbStatus,
+    ema50,
+    ema100,
+    ema200,
+    sharesCurrentPrice,
+    sentiValue,
+    sharesName,
+    companyUrl,
   } = obj;
 
   return (
     <View style={styles.detailsView}>
-      <Text>Title: <Text>{title}</Text></Text>
-      <Text>Name: <Text>{fullname}</Text></Text>
-      <Text>Sector: <Text>{sector}</Text></Text>
-      <Text>Change: <Text>{change}</Text></Text>
-      <Text>Percentage Change: <Text>{percentageChange}</Text></Text>
-      <Text>Volume: <Text>{volume}</Text></Text>
-      <Text>Buy: <Text>{buy}</Text></Text>
-      <Text>Buy Volume: <Text>{buyVolume}</Text></Text>
-      <Text>Sell: <Text>{sell}</Text></Text>
-      <Text>Sell Volume: <Text>{sellVolume}</Text></Text>
-      <Text>LACP: <Text>{lacp}</Text></Text>
-      <Text>Open: <Text>{open}</Text></Text>
-      <Text>High: <Text>{high}</Text></Text>
-      <Text>Low: <Text>{low}</Text></Text>
+      <Text>BB status: <Text>{bbStatus}</Text></Text>
+      <Text>ema 50: <Text>{ema50}</Text></Text>
+      <Text>ema 100: <Text>{ema100}</Text></Text>
+      <Text>ema 200: <Text>{ema200}</Text></Text>
+      <Text>sharesCurrentPrice: <Text>{sharesCurrentPrice}</Text></Text>
+      <Text>Sentiment Value: <Text>{sentiValue}</Text></Text>
+      <Text>Shares Name: <Text>{sharesName}</Text></Text>
+      <Text>Company URL: <Text>{companyUrl}</Text></Text>
     </View>
   )
 }
 
 function Portfolio({ navigation }) {
+  //const [stockId, setStockId] = React.useState([]);
+  const [portfolioArr, setPortfolioArr] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
   const [search, setSearch] = useState(""); //for searchbar state
-  const [data, setData] = useState(DATA); //empty array to store list of items during query
+  const uid = firebase.auth().currentUser.uid; //after login so confirm got user
+
+  useEffect(() => {
+    const query = firebase.database().ref('users/' + uid + '/portfolio').on('value', (snapshot) => {
+      let portfolio = [];
+      if (snapshot !== undefined || null) { //because this node has child === null
+        snapshot.forEach((child => {
+          firebase.database().ref('processedData/' + child.val()).on('value', (snapshot) => {
+            portfolio.push({
+              id: snapshot.key,
+              bbStatus: snapshot.val().bbStatus,
+              ema50: snapshot.val().ema50,
+              ema100: snapshot.val().ema100,
+              ema200: snapshot.val().ema200,
+              sharesCurrentPrice: snapshot.val().sharesCurrentPrice,
+              sentiValue: snapshot.val().sentiValue,
+              sharesName: snapshot.val().sharesName,
+              companyUrl: snapshot.val().companyusrl,
+            });
+          });
+          console.log(portfolio)
+        }))
+      }
+      //console.log(portfolio)
+      setPortfolioArr(portfolio);
+    });
+
+    return () => query();
+  }, []);
 
   //For handling query to filter the stock listed in portfolio
   const handleSearch = (text) => {
@@ -217,7 +108,6 @@ function Portfolio({ navigation }) {
     setData(newData); //set new data into data
     setSearch(text);
   }
-
 
   const renderItem = ({ item }) => {
     return (
@@ -250,7 +140,7 @@ function Portfolio({ navigation }) {
         //To get the query string. Will be use to filter the flatlist locally
         onSubmitEditing={(event) => {
           let query = event.nativeEvent.text;
-          console.log(query);
+          //console.log(query);
           //TODO: add query method to call
         }}
         value={search}
@@ -258,11 +148,12 @@ function Portfolio({ navigation }) {
         style={styles.searchBar}
       />
       <View style={styles.stockView}>
+        {/*console.log(portfolioArr)*/}
         <FlatList
           //data={DATA}
-          data={data}
+          data={portfolioArr}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.sharesName}
         //extraData={selectedId}
         />
       </View>
@@ -326,7 +217,7 @@ export default function PortfolioStackScreen() {
       <PortfolioStack.Screen
         name="Details"
         component={DetailsScreen}
-        options={({ route }) => ({ title: route.params.obj.fullname })}
+        options={({ route }) => ({ title: route.params.obj.sharesName })}
       />
     </PortfolioStack.Navigator>
   )

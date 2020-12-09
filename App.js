@@ -21,11 +21,7 @@ import TimerErrorHandler from './src/utils/TimerErrorHandler';
  */
 TimerErrorHandler();
 
-
-
 const Tab = createBottomTabNavigator();
-
-//const isSignedIn = false; //set sign in to false for testing Login and Registration screens
 
 function BottomTab() {
   return (
@@ -73,97 +69,38 @@ function BottomTab() {
 const Stack = createStackNavigator();
 
 export default function App() {
-  const AuthContext = React.createContext();
-  //manually set for now to easier testing the main UI
-  //will need to properly implement later as this one is extreme
-  //important
-  //const [isSignedIn, setSignedIn] = React.useState(false);
-  const isSignedIn = false;
-
-  const [state, dispatch] = React.useReducer(
-    (prevState, action) => {
-      switch (action.type) {
-        case 'RESTORE_TOKEN':
-          return {
-            ...prevState,
-            userToken: action.token,
-            isLoading: false,
-          };
-        case 'SIGN_IN':
-          return {
-            ...prevState,
-            isSignout: false,
-            userToken: action.token,
-          };
-        case 'SIGN_OUT':
-          return {
-            ...prevState,
-            isSignout: true,
-            userToken: null,
-          };
-      }
-    },
-    {
-      isLoading: true,
-      isSignout: false,
-      userToken: null,
-    }
-  );
+  const [user, setUser] = React.useState(null);
 
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
-    const bootstrapAsync = async () => {
-      let userToken;
-
-      try {
-        userToken = await AsyncStorage.getItem('userToken');
-      } catch (e) {
-        // Restoring token failed
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        setUser(user);
       }
+    });
 
-      // After restoring token, we may need to validate it in production apps
+    //console.log(user);
+  }, []); //run only if user change or during initial load
 
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
-    };
+  /*
+    firebase.auth().signOut().then(function () {
+      // Sign-out successful.
+    }).catch(function (error) {
+      // An error happened.
+    });
+  */
 
-    bootstrapAsync();
-  }, []);
-
-  const authContext = React.useMemo(
-    () => ({
-      signIn: async data => {
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
-      },
-      signOut: () => dispatch({ type: 'SIGN_OUT' }),
-      signUp: async data => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
-      },
-    }),
-    []
-  );
+  //const test = true;
 
   return (
-    <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-        {state.userToken == null ? <BottomTab /> : (
-          <Stack.Navigator>
-            <Stack.Screen name="Login" component={Login} />
-            <Stack.Screen name="Registration" component={Registration} />
-          </Stack.Navigator>
-        )}
-      </NavigationContainer>
-    </AuthContext.Provider>
+    //<AuthContext.Provider value={authContext}>
+    <NavigationContainer>
+      {user !== null ? <BottomTab /> : (
+        <Stack.Navigator>
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="Registration" component={Registration} />
+        </Stack.Navigator>
+      )}
+    </NavigationContainer>
+    //</AuthContext.Provider>
   );
 }

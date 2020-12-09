@@ -39,7 +39,7 @@ export default function Registration({ navigation }) {
           */
 
           console.log(res); //output user
-          alert('Succesfully created a new user');
+          alert('Registration successful. Please verify your email to login');
 
           const uid = res.user.uid; //get unique uid
           console.log(uid);
@@ -60,18 +60,6 @@ export default function Registration({ navigation }) {
         .catch((error) => {
           console.log(error.toString(error))
         });
-
-
-      //store user info in rdb after registration
-      //users/uid/profile:
-      //name
-      //password
-      //username
-      //email
-      firebase.database().ref('users/1').once('value').then((snapshot) => {
-        //console.log('Read from db');
-        //console.log(snapshot);
-      });
     }
   }
 
