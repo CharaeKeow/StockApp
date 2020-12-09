@@ -6,37 +6,39 @@ import { SearchBar } from 'react-native-elements';
 
 const DATA = [
   {
-    "global": {
-      "list": [null, {
-        "title": "Huawei founder says phone unit sale will free it from US curbs",
-        "url": "https://www.theedgemarkets.com/article/huawei-founder-says-phone-unit-sale-will-free-it-us-curbs"
+    global: {
+      list: [null, {
+        title: 'Huawei founder says phone unit sale will free it from US curbs',
+        url: 'https://www.theedgemarkets.com/article/huawei-founder-says-phone-unit-sale-will-free-it-us-curbs'
       }],
-      "sentiment": {
-        "value": 0.585,
-        "wordCloud": "https://firebase...."
+      sentiment: {
+        value: '0.585',
+        wordCloud: 'https://firebase....'
       }
     },
-    "local": {
-      "list": [null, {
-        "title": "Sarawak Consolidated Industries' 3Q net profit leaps to RM12.43m",
-        "url": "https://www.theedgemarkets.com/article/sarawak-consolidated-industries-3q-net-profit-leaps-rm1243m"
+    local: {
+      list: [null, {
+        title: 'Sarawak Consolidated Industries 3Q net profit leaps to RM12.43m',
+        url: 'https://www.theedgemarkets.com/article/sarawak-consolidated-industries-3q-net-profit-leaps-rm1243m'
       }],
-      "sentiment": {
-        "value": 0.653,
-        "wordCloud": "https://firebase..."
+      sentiment: {
+        value: '0.653',
+        wordCloud: 'https://firebase...'
       }
     }
   }
 ];
 
 
+
 const Item = ({ item, onPress, style }) => {
 
   return (
     < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
-      <View style={styles.container}>
-        <Text style={[styles.title, styles.header]}>{item.title}</Text>
-      </View>
+      <View><Text>{item.title}</Text></View>
+      <View><Text>{item.url}</Text></View>
+      <View><Text>{item.value}</Text></View>
+      <View><Text>{item.wordCloud}</Text></View>
     </TouchableOpacity >
   );
 };
@@ -56,12 +58,7 @@ function DetailsScreen({ route }) {
 
   return (
     <View style={styles.detailsView}>
-      return (
-      <View style={{ flex: 1, justifyContent: 'top', alignItems: 'center' }}>
-        <Text>Settings!</Text>
-        <Button title="Local" onPress={() => navigation.navigate('Global')} />
-      </View>
-  );
+
       <Text>Title: <Text>{title}</Text></Text>
       <Text>Url: <Text>{url}</Text></Text>
       <Text>Value: <Text>{value}</Text></Text>
@@ -128,9 +125,9 @@ function News({ navigation }) {
       <View style={styles.stockView}>
         <FlatList
           //data={DATA}
-          data={data}
+          data={[data[0].global.list[1]]}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.title}
         //extraData={selectedId}
         />
       </View>
@@ -181,7 +178,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 })
-
 
 const NewsStack = createStackNavigator();
 
