@@ -1,10 +1,12 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
 
 import { firebase } from '../firebase/config';
+import DetailsScreen from './PortfolioDetailsScreen';
+import styles from '../styles/Portfolio.style';
 
 const Item = ({ item, onPress, style }) => {
 
@@ -19,36 +21,8 @@ const Item = ({ item, onPress, style }) => {
   );
 };
 
-function DetailsScreen({ route }) {
-  const { obj } = route.params; //destructuring
-
-  const {
-    id,
-    bbStatus,
-    ema50,
-    ema100,
-    ema200,
-    sharesCurrPrice,
-    sentiValue,
-    sharesName,
-    companyurl,
-  } = obj;
-
-  return (
-    <View style={styles.detailsView}>
-      <Text>BB status: <Text>{bbStatus}</Text></Text>
-      <Text>ema 50: <Text>{ema50}</Text></Text>
-      <Text>ema 100: <Text>{ema100}</Text></Text>
-      <Text>ema 200: <Text>{ema200}</Text></Text>
-      <Text>sharesCurrentPrice: <Text>{sharesCurrPrice}</Text></Text>
-      <Text>Sentiment Value: <Text>{sentiValue}</Text></Text>
-      <Text>Shares Name: <Text>{sharesName}</Text></Text>
-      <Text>Company URL: <Text>{companyurl}</Text></Text>
-    </View>
-  )
-}
-
 function Portfolio({ navigation }) {
+  const [selectedId, setSelectedId] = useState(null)
   //const [stockId, setStockId] = React.useState([]);
   const [search, setSearch] = useState(''); //for searchbar state
   //For handling query to filter the stock listed in portfolio
@@ -71,7 +45,7 @@ function Portfolio({ navigation }) {
                   ema50: snapshot.val().ema50,
                   ema100: snapshot.val().ema100,
                   ema200: snapshot.val().ema200,
-                  sharesCurrentPrice: snapshot.val().sharesCurrPrice,
+                  sharesCurrPrice: snapshot.val().sharesCurrPrice,
                   sentiValue: snapshot.val().sentiValue,
                   sharesName: snapshot.val().sharesName,
                   companyUrl: snapshot.val().companyurl,
@@ -109,7 +83,7 @@ function Portfolio({ navigation }) {
         item={item}
         style={styles.flatlist}
         onPress={() => {
-          //setSelectedId(item.id);
+          setSelectedId(item.id);
           navigation.navigate('Details', {
             //itemId: item.id,
             obj: item, //objects of clicked element
@@ -148,56 +122,12 @@ function Portfolio({ navigation }) {
           data={portfolioArr}
           renderItem={renderItem}
           keyExtractor={item => item.id}
-        //extraData={selectedId}
+          extraData={selectedId}
         />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  item: {
-    padding: 20,
-    height: 100,
-    width: 300,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    //marginRight: 50,
-    borderRadius: 10,
-  },
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "400",
-  },
-  flatlist: {
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    alignSelf: 'center',
-  },
-  view: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  stockView: {
-    width: '100%',
-    marginBottom: 60
-  },
-  searchBar: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  detailsView: {
-    backgroundColor: '#fff',
-    margin: 10,
-    padding: 10,
-  },
-})
 
 const PortfolioStack = createStackNavigator();
 
