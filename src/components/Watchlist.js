@@ -1,157 +1,33 @@
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
 
-const DATA = [
-  {
-    id: '001',
-    title: 'APPL',
-    fullname: 'Apple Inc.',
-    sector: 'Technology',
-    change: '+0.005',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180',
-  },
-  {
-    id: '002',
-    title: 'AMZN',
-    sector: 'Technology',
-    fullname: 'Amazon Inc.',
-    change: '-0.002',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '003',
-    title: 'TSLA',
-    sector: 'Automotive',
-    fullname: 'Tesla Inc',
-    change: '+0.125',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '004',
-    title: 'GOOG',
-    fullname: 'Google Inc.',
-    sector: 'Technology',
-    change: '+0.005',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '005',
-    title: 'ABC',
-    fullname: 'ABC Inc.',
-    sector: 'Technology',
-    change: '+0.005',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '006',
-    title: 'CIMB',
-    fullname: 'CIMB Bank',
-    sector: 'Technology',
-    change: '-0.015',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '007',
-    title: 'KANGER',
-    fullname: 'Kanger International Berhad',
-    sector: 'Technology',
-    change: '+0.225',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }, {
-    id: '008',
-    title: 'IRIS',
-    fullname: 'Iris Corporation Berhad',
-    sector: 'Technology',
-    change: '-0.215',
-    percentageChange: '+2.78',
-    volume: '73,604,287',
-    buy: '0.185',
-    buyVolume: '227,027',
-    sell: '0.190',
-    sellVolume: '231,498',
-    lacp: '0.180',
-    open: '0.185',
-    high: '0.195',
-    low: '0.180'
-  }
-];
+import { firebase } from '../firebase/config';
 
-const isPositive = (val) => {
-  if (val.charAt(0) === '+') {
-    return true; //early exit if true
-  }
-  return false; //no else, default return false
+function DetailsScreen({ route }) {
+  const { obj } = route.params;
+
+  const {
+    sharesCurrentPrice,
+    sharesName,
+  } = obj;
+
+  return (
+    <View style={styles.detailsView}>
+      <Text>Share Name: <Text>{sharesName}</Text></Text>
+      <Text>Share Current Price: <Text>{sharesCurrentPrice}</Text></Text>
+    </View>
+  )
 }
 
 const Item = ({ item, onPress, style }) => {
-
   return (
     < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
       <View style={styles.container}>
-        <Text style={[styles.title, styles.header]}>{item.title}</Text>
-        {isPositive(item.change) ?
-          <Text style={{ color: 'green' }}>{item.change}</Text>
-          : <Text style={{ color: 'red' }}>{item.change}</Text>}
+        <Text style={[styles.title, styles.header]}>{item.sharesName}</Text>
+        <Text style={{ color: 'green' }}>{item.sharesCurrentPrice}</Text>
       </View>
     </TouchableOpacity >
   );
@@ -160,7 +36,40 @@ const Item = ({ item, onPress, style }) => {
 function Watchlist({ navigation }) {
   //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
   const [search, setSearch] = useState(""); //for searchbar state
-  const [data, setData] = useState(DATA); //empty array to store list of items during query
+  const [data, setData] = useState([]); //empty array to store list of items during query
+  const [watchlistArr, setWatchlistArr] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const watchlistRef = firebase.database().ref('/watchlist/shares');
+
+    watchlistRef.on('value', (snapshot) => {
+      if (isMounted) {
+        let watchlist = [];
+        if (snapshot !== null) {
+          snapshot.forEach((child) => {
+            firebase.database().ref('/watchlist/shares/' + child.key).on('value', (childSnapshot) => {
+              //console.log(childSnapshot.val())
+              if (childSnapshot.val() !== null) {
+                watchlist.push({
+                  id: childSnapshot.key,
+                  sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
+                  sharesName: childSnapshot.val().sharesName
+                })
+              }
+            })
+          })
+        }
+        if (watchlist !== null) {
+          setWatchlistArr(watchlist);
+        }
+      }
+    })
+    return () => { isMounted = false };
+  }, [watchlistArr === null]) //run as long as watchlistArr is null
+
+  console.log(watchlistArr);
 
   //For handling query to filter the stock listed in portfolio
   const handleSearch = (text) => {
@@ -173,7 +82,6 @@ function Watchlist({ navigation }) {
     setSearch(text);
   }
 
-
   const renderItem = ({ item }) => {
     return (
       <Item
@@ -182,7 +90,7 @@ function Watchlist({ navigation }) {
         onPress={() => {
           //setSelectedId(item.id);
           navigation.navigate('Details', {
-            //itemId: item.id,
+            itemId: item.id,
             obj: item, //objects of clicked element
           });
         }}
@@ -195,11 +103,6 @@ function Watchlist({ navigation }) {
       <SearchBar
         placeholder="Search stock"
         onChangeText={
-          //(text) => { setSearch(text) }
-          //set arr = DATA obj upon clicking on this component. But think this is
-          //not the best idea because fulldata should contains element beforehand.
-          //Will refactor later
-          //setFullData(DATA);
           (text) => handleSearch(text)
         }
         //To get the query string. Will be use to filter the flatlist locally
@@ -215,7 +118,7 @@ function Watchlist({ navigation }) {
       <View style={styles.stockView}>
         <FlatList
           //data={DATA}
-          data={data}
+          data={watchlistArr}
           renderItem={renderItem}
           keyExtractor={item => item.id}
         //extraData={selectedId}
@@ -274,6 +177,11 @@ export default function WatchlistStackScreen() {
   return (
     <WatchlistStack.Navigator>
       <WatchlistStack.Screen name="Watchlist" component={Watchlist} />
+      <WatchlistStack.Screen
+        name="Details"
+        component={DetailsScreen}
+        options={({ route }) => ({ title: route.params.obj.fullname })}
+      />
     </WatchlistStack.Navigator>
   )
 }

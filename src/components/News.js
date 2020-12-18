@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 const DATA = [
   {
@@ -28,8 +29,6 @@ const DATA = [
     }
   }
 ];
-
-
 
 const Item = ({ item, onPress, style }) => {
 
@@ -73,17 +72,6 @@ function News({ navigation }) {
   const [search, setSearch] = useState(""); //for searchbar state
   const [data, setData] = useState(DATA); //empty array to store list of items during query
 
-  //For handling query to filter the stock listed in portfolio
-  const handleSearch = (text) => {
-    const newData = data.filter(item => {
-      const itemData = item.fullname.toLowerCase();
-      const textData = text.toLowerCase();
-      return itemData.indexOf(textData) > -1;
-    });
-    setData(newData); //set new data into data
-    setSearch(text);
-  }
-
   const renderItem = ({ item }) => {
     return (
       <Item
@@ -102,26 +90,6 @@ function News({ navigation }) {
 
   return (
     <View style={styles.view}>
-      <SearchBar
-        placeholder="Search stock"
-        onChangeText={
-          //(text) => { setSearch(text) }
-          //set arr = DATA obj upon clicking on this component. But think this is
-          //not the best idea because fulldata should contains element beforehand.
-          //Will refactor later
-          //setFullData(DATA);
-          (text) => handleSearch(text)
-        }
-        //To get the query string. Will be use to filter the flatlist locally
-        onSubmitEditing={(event) => {
-          let query = event.nativeEvent.text;
-          console.log(query);
-          //TODO: add query method to call
-        }}
-        value={search}
-        platform="android"
-        style={styles.searchBar}
-      />
       <View style={styles.stockView}>
         <FlatList
           //data={DATA}
@@ -179,12 +147,53 @@ const styles = StyleSheet.create({
   },
 })
 
-const NewsStack = createStackNavigator();
+//<NewsStack.Screen name="News" component={News} />
 
+/* depreceated as it cannot keep the respective tabs history
+function MyTabs() { //component top tab
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Global" component={News} />
+      <Tab.Screen name="Local" component={News} />
+    </Tab.Navigator>
+  )
+}
+*/
+
+
+//Create stack to keep global news tab history
+const GlobalStack = createStackNavigator();
+
+//component and stack for Global news
+function Global() {
+  return (
+    <GlobalStack.Navigator>
+      <GlobalStack.Screen name="Global" component={News} />
+    </GlobalStack.Navigator>
+  )
+}
+
+//Create stack to keep local news tab history
+const LocalStack = createStackNavigator();
+
+//component and stack for Global news
+function Local() {
+  return (
+    <LocalStack.Navigator>
+      <LocalStack.Screen name="Local" component={News} />
+    </LocalStack.Navigator>
+  )
+}
+
+//create top tab stack
+const Tab = createMaterialTopTabNavigator();
+
+//For rendering the screen for Global and Local tabs.
 export default function NewsStackScreen() {
   return (
-    <NewsStack.Navigator>
-      <NewsStack.Screen name="News" component={News} />
-    </NewsStack.Navigator>
-  )
+    <Tab.Navigator>
+      <Tab.Screen name="Global" component={Global} />
+      <Tab.Screen name="Local" component={Local} />
+    </Tab.Navigator>
+  );
 }

@@ -6,19 +6,6 @@ import { SearchBar } from 'react-native-elements';
 
 import { firebase } from '../firebase/config';
 
-/* For checking is the change of the stock is positive or negative, which will later
-   be used for assigning the right color to <Text> component to display the colour
- */
-
-/*
-const isPositive = (val) => {
- if (val.charAt(0) === '+') {
-   return true; //early exit if true
- }
- return false; //no else, default return false
-}
-*/
-
 const Item = ({ item, onPress, style }) => {
 
   return (
@@ -41,10 +28,10 @@ function DetailsScreen({ route }) {
     ema50,
     ema100,
     ema200,
-    sharesCurrentPrice,
+    sharesCurrPrice,
     sentiValue,
     sharesName,
-    companyUrl,
+    companyurl,
   } = obj;
 
   return (
@@ -53,52 +40,59 @@ function DetailsScreen({ route }) {
       <Text>ema 50: <Text>{ema50}</Text></Text>
       <Text>ema 100: <Text>{ema100}</Text></Text>
       <Text>ema 200: <Text>{ema200}</Text></Text>
-      <Text>sharesCurrentPrice: <Text>{sharesCurrentPrice}</Text></Text>
+      <Text>sharesCurrentPrice: <Text>{sharesCurrPrice}</Text></Text>
       <Text>Sentiment Value: <Text>{sentiValue}</Text></Text>
       <Text>Shares Name: <Text>{sharesName}</Text></Text>
-      <Text>Company URL: <Text>{companyUrl}</Text></Text>
+      <Text>Company URL: <Text>{companyurl}</Text></Text>
     </View>
   )
 }
 
 function Portfolio({ navigation }) {
   //const [stockId, setStockId] = React.useState([]);
-  const [portfolioArr, setPortfolioArr] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
-  const [search, setSearch] = useState(""); //for searchbar state
-  const uid = firebase.auth().currentUser.uid; //after login so confirm got user
+  const [search, setSearch] = useState(''); //for searchbar state
+  //For handling query to filter the stock listed in portfolio
+  const [data, setData] = useState('');
+  //array to keep list of portfolio fetch from Firebase
+  const [portfolioArr, setPortfolioArr] = React.useState(null);
 
   useEffect(() => {
-    const query = firebase.database().ref('users/' + uid + '/portfolio').on('value', (snapshot) => {
-      let portfolio = [];
-      if (snapshot !== undefined || null) { //because this node has child === null
-        snapshot.forEach((child => {
-          firebase.database().ref('processedData/' + child.val()).on('value', (snapshot) => {
-            portfolio.push({
-              id: snapshot.key,
-              bbStatus: snapshot.val().bbStatus,
-              ema50: snapshot.val().ema50,
-              ema100: snapshot.val().ema100,
-              ema200: snapshot.val().ema200,
-              sharesCurrentPrice: snapshot.val().sharesCurrentPrice,
-              sentiValue: snapshot.val().sentiValue,
-              sharesName: snapshot.val().sharesName,
-              companyUrl: snapshot.val().companyusrl,
+    let isMounted = true;
+    firebase.database().ref('/users/' + 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2' + '/portfolio').on('value', (snapshot) => {
+      if (isMounted) {
+        let portfolio = [];
+        if (snapshot !== undefined || null) { //because this node has child === null
+          snapshot.forEach((child => {
+            firebase.database().ref('/processedData/' + child.val()).on('value', (snapshot) => {
+              if (snapshot.val() !== null) {
+                portfolio.push({
+                  id: snapshot.key,
+                  bbStatus: snapshot.val().bbStatus,
+                  ema50: snapshot.val().ema50,
+                  ema100: snapshot.val().ema100,
+                  ema200: snapshot.val().ema200,
+                  sharesCurrentPrice: snapshot.val().sharesCurrPrice,
+                  sentiValue: snapshot.val().sentiValue,
+                  sharesName: snapshot.val().sharesName,
+                  companyUrl: snapshot.val().companyurl,
+                });
+              }
             });
-          });
-          console.log(portfolio)
-        }))
+          }))
+        }
+        if (portfolio !== null) { //ensure portfolio not null before set
+          setPortfolioArr(portfolio);
+        }
       }
-      //console.log(portfolio)
-      setPortfolioArr(portfolio);
-    });
+    })
+    return () => { isMounted = false };
+  }, [portfolioArr === null]); //run useEffect as long as portfolioArr is null
 
-    return () => query();
-  }, []);
+  React.useEffect(() => {
+    console.log(portfolioArr);
+    console.log();
+  }, [])
 
-  //For handling query to filter the stock listed in portfolio
   const handleSearch = (text) => {
     const newData = data.filter(item => {
       const itemData = item.fullname.toLowerCase();
@@ -153,7 +147,7 @@ function Portfolio({ navigation }) {
           //data={DATA}
           data={portfolioArr}
           renderItem={renderItem}
-          keyExtractor={item => item.sharesName}
+          keyExtractor={item => item.id}
         //extraData={selectedId}
         />
       </View>
