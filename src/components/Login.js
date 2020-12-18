@@ -4,7 +4,6 @@ import React from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 //handle keyboard appearance and automatically scrolls to focused <TextInput>
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import styles from '../styles/RegistrationLogin.style';
 import { firebase } from '../firebase/config';
@@ -20,25 +19,21 @@ export default function Login({ navigation
 
   const onLoginPress = () => {
     firebase
-      .auth().setPersistence(firebase.auth.Auth.Persistence.SESSION).then(() => {
-        return firebase.auth().signInWithEmailAndPassword(email, password)
-          .then((res) => {
-            // Disable for now
-            if (!res.user.emailVerified) {
-              //alert("Please verify your email first!");
-            } else {
-              //console.log(res.user)
-              //alert(`Hi ${res.user}. Welcome back 😄`);
-            }
-            //* /
-
-            alert(`Hi ${res.user.displayName}. Welcome back 😄`);
-          })
-      })
-
-
-      .catch((error) => alert(error));
+      .auth().signInWithEmailAndPassword(email, password)
+      .then((res) => {
+        // Disable for now
+        /*
+        if (!res.user.emailVerified) {
+          alert("Please verify your email first!");
+        } else {
+          console.log(res.user)
+          alert(`Hi ${res.user}. Welcome back 😄`);
+        }
+        */
+        alert(`Hi ${res.user.displayName}. Welcome back 😄`);
+      }).catch((error) => alert(error));
   }
+
 
   return (
     <View style={styles.container}>
@@ -74,7 +69,7 @@ export default function Login({ navigation
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text style={styles.footerText}>Don't have an account?
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign Up</Text>
+    <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign Up</Text>
           </Text>
         </View>
       </KeyboardAwareScrollView>

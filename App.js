@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -71,14 +71,12 @@ const Stack = createStackNavigator();
 export default function App() {
   const [user, setUser] = React.useState(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        setUser(user);
+      if (user !== null) {
+        setUser(user.uid);
       }
     });
-
-    //console.log(user);
   }, []); //run only if user change or during initial load
 
   /*
@@ -89,10 +87,7 @@ export default function App() {
     });
   */
 
-  //const test = true;
-
   return (
-    //<AuthContext.Provider value={authContext}>
     <NavigationContainer>
       {user !== null ? <BottomTab /> : (
         <Stack.Navigator>
@@ -101,6 +96,5 @@ export default function App() {
         </Stack.Navigator>
       )}
     </NavigationContainer>
-    //</AuthContext.Provider>
   );
 }
