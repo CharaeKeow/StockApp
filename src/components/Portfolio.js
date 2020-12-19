@@ -28,7 +28,7 @@ function Portfolio({ navigation }) {
   //For handling query to filter the stock listed in portfolio
   const [data, setData] = useState('');
   //array to keep list of portfolio fetch from Firebase
-  const [portfolioArr, setPortfolioArr] = React.useState(null);
+  const [portfolioArr, setPortfolioArr] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -37,18 +37,18 @@ function Portfolio({ navigation }) {
         let portfolio = [];
         if (snapshot !== undefined || null) { //because this node has child === null
           snapshot.forEach((child => {
-            firebase.database().ref('/processedData/' + child.val()).on('value', (snapshot) => {
-              if (snapshot.val() !== null) {
+            firebase.database().ref('/processedData/' + child.val()).on('value', (childSnapshot) => {
+              if (childSnapshot.val() !== null) {
                 portfolio.push({
-                  id: snapshot.key,
-                  bbStatus: snapshot.val().bbStatus,
-                  ema50: snapshot.val().ema50,
-                  ema100: snapshot.val().ema100,
-                  ema200: snapshot.val().ema200,
-                  sharesCurrPrice: snapshot.val().sharesCurrPrice,
-                  sentiValue: snapshot.val().sentiValue,
-                  sharesName: snapshot.val().sharesName,
-                  companyUrl: snapshot.val().companyurl,
+                  id: childSnapshot.key,
+                  bbStatus: childSnapshot.val().bbStatus,
+                  ema50: childSnapshot.val().ema50,
+                  ema100: childSnapshot.val().ema100,
+                  ema200: childSnapshot.val().ema200,
+                  sharesCurrPrice: childSnapshot.val().sharesCurrPrice,
+                  sentiValue: childSnapshot.val().sentiValue,
+                  sharesName: childSnapshot.val().sharesName,
+                  companyUrl: childSnapshot.val().companyurl,
                 });
               }
             });
@@ -61,11 +61,6 @@ function Portfolio({ navigation }) {
     })
     return () => { isMounted = false };
   }, [portfolioArr === null]); //run useEffect as long as portfolioArr is null
-
-  React.useEffect(() => {
-    console.log(portfolioArr);
-    console.log();
-  }, [])
 
   const handleSearch = (text) => {
     const newData = data.filter(item => {
@@ -85,7 +80,7 @@ function Portfolio({ navigation }) {
         onPress={() => {
           setSelectedId(item.id);
           navigation.navigate('Details', {
-            //itemId: item.id,
+            itemId: item.id,
             obj: item, //objects of clicked element
           });
         }}
@@ -116,7 +111,6 @@ function Portfolio({ navigation }) {
         style={styles.searchBar}
       />
       <View style={styles.stockView}>
-        {/*console.log(portfolioArr)*/}
         <FlatList
           //data={DATA}
           data={portfolioArr}
