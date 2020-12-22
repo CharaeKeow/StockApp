@@ -12,20 +12,48 @@ import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
 import DetailsScreen from './WatchlistDetailsScreen';
 
+const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
+const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
-const onPress = () => {
-  Alert.alert(
-    'ADD TO PROTFOLIO',
-    'Are you sure?', // <- this part is optional, you can pass an empty string
-    [
-      { text: 'Yes', onPress: () => console.log('YES Pressed') }, // insert ADD TO PORTFOLIO function
-      { text: 'No', onPress: () => console.log('NO Pressed') },
-    ],
-    { cancelable: false },
-  );
-};
+const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
+  const [exist, setExist] = useState(false); //already exist in porfolio or not
 
-const Item = ({ item, style }) => {
+  const newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
+  const addToPortfolio = (id) => {
+    newPortfolioRef.set(
+      id
+    )
+  }
+
+  //for pressing item on the watchlist, which will trigger an alert
+  //asking user to add item to portfolio or not
+  const onPress = () => {
+    Alert.alert(
+      'ADD TO PROTFOLIO',
+      'Are you sure?', // <- this part is optional, you can pass an empty string
+      [
+        {
+          text: 'Yes', onPress: () => {
+            addToPortfolio(id) //add to firebase user's portfolio
+          }
+        }, // insert ADD TO PORTFOLIO function
+        { text: 'No', onPress: () => console.log('NO Pressed') },
+      ],
+      { cancelable: false },
+    );
+  };
+
+  //for checking if it's already added in portfolio
+  React.useEffect(() => {
+    userPortfolioListRef.on('value', (snapshot) => {
+      snapshot.forEach((child) => {
+        if (child.val() === id) {
+          setExist(true)
+        }
+      })
+    })
+  })
+
   return (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]} >
       <View style={styles.container}>
@@ -110,15 +138,9 @@ function Watchlist({ navigation }) {
   const renderItem = ({ item }) => {
     return (
       <Item
+        id={item.id} //stock id
         item={item}
         style={styles.flatlist}
-        onPress={() => {
-          setSelectedId(item.id);
-          navigation.navigate('Details', {
-            itemId: item.id,
-            obj: item, //objects of clicked element
-          });
-        }}
       />
     );
   }
@@ -152,6 +174,7 @@ function Watchlist({ navigation }) {
     </View>
   );
 }
+
 const WatchlistStack = createStackNavigator();
 
 export default function WatchlistStackScreen() {
