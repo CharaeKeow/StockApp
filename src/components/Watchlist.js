@@ -29,7 +29,7 @@ const onPress = () => {
 
 const Item = ({ item, style }) => {
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.item, style]} >
+    <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
       <View style={styles.container}>
         <View style={{ flex:15}}>
           <Text style={{ textAlign:'center', fontSize:17, fontWeight: "bold", paddingTop:11, paddingRight:15}} >{item.sharesName}</Text>
