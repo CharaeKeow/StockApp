@@ -3,24 +3,10 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text, Linking } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { PieChart } from 'react-native-svg-charts'
 import { firebase } from '../firebase/config';
 import styles from '../styles/News.style';
 
 const Tab = createMaterialTopTabNavigator();
-
-
-const data = [50, 10]
-const pieData = data
-    .filter((value) => value > 0)
-    .map((value, index) => ({
-        value,
-        svg: {
-            fill: ('green', 'red'),
-            onPress: () => console.log('press', index),
-        },
-        key: `pie-${index}`,
-    }))
 
 const Item = ({ item, style }) => {
   return (
@@ -29,7 +15,6 @@ const Item = ({ item, style }) => {
         <Text style={{fontSize:16, fontWeight:'bold'}}>{item.title}</Text>
         <Text style={{paddingTop:6}}>{item.date}</Text>
         <Text>SA Score: {item.compound}</Text>
-        <PieChart style={{ height: 80 }} data={pieData} />
       </View>
     </TouchableOpacity >
   );
