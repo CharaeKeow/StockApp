@@ -1,17 +1,15 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export default StyleSheet.create({
   item: {
-    padding: 20,
-    height: 100,
-    width: 300,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    //marginRight: 50,
-    borderRadius: 10,
+    padding: 18,
+    height: 200,
+    width: Dimensions.get('window').width - 25,
+    marginVertical: 6,
+    borderRadius: 15,
   },
   container: {
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "space-between",
   },
   header: {
@@ -36,10 +34,5 @@ export default StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
-  },
-  detailsView: {
-    backgroundColor: '#fff',
-    margin: 10,
-    padding: 10,
   },
 });

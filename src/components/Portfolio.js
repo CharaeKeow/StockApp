@@ -1,22 +1,50 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
+import { AreaChart } from 'react-native-svg-charts'
+import * as shape from 'd3-shape'
 
 import { firebase } from '../firebase/config';
 import DetailsScreen from './PortfolioDetailsScreen';
 import styles from '../styles/Portfolio.style';
 
-const Item = ({ item, onPress, style }) => {
+const handlerLongClick = () => {
+  Alert.alert(
+    'DELETE',
+    'Are you sure?', // <- this part is optional, you can pass an empty string
+    [
+      {text: 'Yes', onPress: () => console.log('YES Pressed')}, // insert DELETE function
+      {text: 'No', onPress: () => console.log('NO Pressed')},
+    ],
+    {cancelable: false},
+  );
+};
 
+const Item = ({ item, style }) => {
   return (
-    < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
-      <View style={styles.container}>
-        <Text style={[styles.title, styles.header]}>{item.sharesName}</Text>
-        <Text style={{ color: 'green' }}>{item.sentiValue}</Text>
-        <Text>{item.bbStatus}</Text>
-      </View>
+    <TouchableOpacity onLongPress={handlerLongClick} onPress={()=>{ Linking.openURL(item.companyUrl)}} style={[styles.item, style]} >
+      <Text style={{ textAlign:'center', fontSize:18, fontWeight: "bold", paddingRight:15}}>{item.sharesName}<Text style={{ fontSize:18, fontWeight: "bold", paddingLeft:6, color: 'green' }}>   RM {item.sharesCurrPrice}</Text></Text>
+      <View style={{ flexDirection: "row"}}>
+          <View style={{ paddingTop:20, paddingLeft:12, backgroundColor: '#fff', flex:1.5}}>
+            <Text>EMA 50   : <Text>{item.ema50}</Text></Text>
+            <Text>EMA 100 : <Text>{item.ema100}</Text></Text>
+            <Text>EMA 200 : <Text>{item.ema200}</Text></Text>
+            <Text>SA Score : <Text>{item.sentiValue}</Text></Text>
+            <Text>BB Status: <Text>{item.bbStatus}</Text></Text>
+          </View>
+          <View style={{ paddingRight:12, flex:1}}>
+            <AreaChart
+                style={{ paddingTop:15, height: 100, width: 110 }}
+                data={[6.01, 8.02, 5.05, 9.59, 8.5, 9.1, 6.547, 5.03, 4.46, 5.01]}
+                contentInset={{ top: 20, bottom: 20 }}
+                curve={shape.curveNatural}
+                svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
+              >
+            </AreaChart>
+          </View>
+        </View>
     </TouchableOpacity >
   );
 };
