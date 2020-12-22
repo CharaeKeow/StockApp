@@ -1,21 +1,52 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
 import filter from 'lodash.filter'; //for filtering searchbar
+// Line chart
+import { AreaChart } from 'react-native-svg-charts'
+import * as shape from 'd3-shape'
+
 
 import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
 import DetailsScreen from './WatchlistDetailsScreen';
 
-const Item = ({ item, onPress, style }) => {
+
+const onPress = () => {
+  Alert.alert(
+    'ADD TO PROTFOLIO',
+    'Are you sure?', // <- this part is optional, you can pass an empty string
+    [
+      { text: 'Yes', onPress: () => console.log('YES Pressed') }, // insert ADD TO PORTFOLIO function
+      { text: 'No', onPress: () => console.log('NO Pressed') },
+    ],
+    { cancelable: false },
+  );
+};
+
+const Item = ({ item, style }) => {
   return (
-    < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
+    <TouchableOpacity onPress={onPress} style={[styles.item, style]} >
       <View style={styles.container}>
-        <Text style={[styles.title, styles.header]}>{item.sharesName}</Text>
-        <Text style={{ color: 'green' }}>{item.sharesCurrentPrice}</Text>
+        <View style={{ flex: 15 }}>
+          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingTop: 11, paddingRight: 15 }} >{item.sharesName}</Text>
+        </View>
+        <View style={{ flex: 10 }}>
+          <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice}</Text>
+        </View>
+        <View style={{ flex: 10, paddingRight: 15 }}>
+          <AreaChart
+            style={{ height: 40, width: 90 }}
+            data={[2, 4, 5, 6, 7, 8, 15, 7, 5, 4, 4, 5, 7, 6, 5, 4]}
+            // contentInset={{ top: 30, bottom: 30 }}
+            curve={shape.curveNatural}
+            svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
+          >
+          </AreaChart>
+        </View>
       </View>
     </TouchableOpacity >
   );

@@ -20,10 +20,6 @@ function MyTabs() {
   );
 } */
 
-//YEEEEEEEEEEEEEEEEEEEEEEEEEEEETT
-//YEEEEEEEEEEEEEEEEEEEEEEEEEEEETT
-//YEEEEEEEEEEEEEEEEEEEEEEEEEEEETT
-
 const Item = ({ item, onPress, style }) => {
 
   return (
