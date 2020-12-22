@@ -11,19 +11,45 @@ import { firebase } from '../firebase/config';
 import DetailsScreen from './PortfolioDetailsScreen';
 import styles from '../styles/Portfolio.style';
 
-const handlerLongClick = () => {
-  Alert.alert(
-    'DELETE',
-    'Are you sure?', // <- this part is optional, you can pass an empty string
-    [
-      { text: 'Yes', onPress: () => console.log('YES Pressed') }, // insert DELETE function
-      { text: 'No', onPress: () => console.log('NO Pressed') },
-    ],
-    { cancelable: false },
-  );
-};
+//first obtain the user node
+const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 
-const Item = ({ item, style }) => {
+const Item = ({ item, style, id }) => {
+  const [exist, setExist] = useState(true); //it exists in db (as it's already in portfolio), hence TRUE
+  const [stockId, setStockId] = useState(null);
+
+  const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+  const userPortfolioListRemoveChildRef = (stockId) => firebase.database().ref('/users/' + uid + '/portfolio/' + stockId);
+
+  useEffect(() => {
+    userPortfolioListRef.once('value', (snapshot) => {
+      console.log(snapshot);
+      snapshot.forEach((child) => {
+        if (child.val() === id) {
+          setStockId(child.key);
+        }
+      })
+    })
+  }, []) //run once on each render
+
+  //long pressing will remove item from portfolio
+  const handlerLongClick = () => {
+    Alert.alert(
+      'DELETE',
+      'Are you sure?', // <- this part is optional, you can pass an empty string
+      [
+        {
+          text: 'Yes', onPress: () => {
+            //console.log('YES Pressed');
+            userPortfolioListRemoveChildRef(stockId).remove();
+          }
+        }, // insert DELETE function
+        { text: 'No', onPress: () => console.log('NO Pressed') },
+      ],
+      { cancelable: false },
+    );
+  };
+
   return (
     <TouchableOpacity onLongPress={handlerLongClick} onPress={() => { Linking.openURL(item.companyUrl) }} style={[styles.item, style]} >
       <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: "bold", paddingRight: 15 }}>{item.sharesName}<Text style={{ fontSize: 18, fontWeight: "bold", paddingLeft: 6, color: 'green' }}>   RM {item.sharesCurrPrice}</Text></Text>
@@ -117,6 +143,7 @@ function Portfolio({ navigation }) {
   const renderItem = ({ item }) => {
     return (
       <Item
+        id={item.id} //pass id of each item (stock)
         item={item}
         style={styles.flatlist}
         onPress={() => {
