@@ -5,10 +5,8 @@ import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
 import filter from 'lodash.filter'; //for filtering searchbar
-// Line chart
-import { AreaChart } from 'react-native-svg-charts'
-import * as shape from 'd3-shape'
-
+import { AreaChart } from 'react-native-svg-charts'; // Line chart
+import * as shape from 'd3-shape';
 
 import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
@@ -55,8 +53,8 @@ const Item = ({ item, style }) => {
 function Watchlist({ navigation }) {
   const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
   const [search, setSearch] = useState(""); //for searchbar state
-  const [data, setData] = useState([]); //empty array to store list of items during query
   const [watchlistArr, setWatchlistArr] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -69,7 +67,7 @@ function Watchlist({ navigation }) {
         if (snapshot !== null) {
           snapshot.forEach((child) => {
             firebase.database().ref('/watchlist/shares/' + child.key).on('value', (childSnapshot) => {
-              //console.log(childSnapshot.val())
+              //console.log(childSnapshot.val().sharesName.includes('BON'))
               if (childSnapshot.val() !== null) {
                 watchlist.push({
                   id: childSnapshot.key,
@@ -88,21 +86,25 @@ function Watchlist({ navigation }) {
     return () => { isMounted = false };
   }, [watchlistArr === null]) //run as long as watchlistArr is null
 
-
-  //For handling query to filter the stock listed in portfolio
+  //For handling query to filter the watchlist queried from Firebase
   const handleSearch = (text) => {
-    const formattedQUery = text.toLowerCase();
+    const formattedQuery = text.toLowerCase();
     const filteredData = filter(watchlistArr, data => {
-      return contains(data, formattedQUery);
+      return contains(data, formattedQuery);
     })
-    setData(newData); //set new data into data
-    setSearch(text);
+    //console.log(filteredData);
+    setFilteredData(filteredData); //set filtered data into new data to be passed into Flatlist
+    console.log(watchlistArr);
+    setSearch(text); //contains the input in search box
   }
 
   const contains = ({ sharesName }, query) => {
-    if (sharesName.includes(query)) {
-      return true
+    //destructuring sharesName from shares
+    console.log(sharesName)
+    if (sharesName.toLowerCase().includes(query)) {
+      return true; //true if found
     }
+    return false; //if not found
   }
 
   const renderItem = ({ item }) => {
@@ -141,7 +143,7 @@ function Watchlist({ navigation }) {
       <View style={styles.stockView}>
         <FlatList
           //data={DATA}
-          data={watchlistArr}
+          data={search === '' ? watchlistArr : filteredData}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           extraData={selectedId}

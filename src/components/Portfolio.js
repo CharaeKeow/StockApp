@@ -3,8 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
-import { AreaChart } from 'react-native-svg-charts'
-import * as shape from 'd3-shape'
+import { AreaChart } from 'react-native-svg-charts';
+import * as shape from 'd3-shape';
+import filter from 'lodash.filter';
 
 import { firebase } from '../firebase/config';
 import DetailsScreen from './PortfolioDetailsScreen';
@@ -54,7 +55,7 @@ function Portfolio({ navigation }) {
   //const [stockId, setStockId] = React.useState([]);
   const [search, setSearch] = useState(''); //for searchbar state
   //For handling query to filter the stock listed in portfolio
-  const [data, setData] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
   //array to keep list of portfolio fetch from Firebase
   const [portfolioArr, setPortfolioArr] = useState([]);
 
@@ -90,14 +91,27 @@ function Portfolio({ navigation }) {
     return () => { isMounted = false };
   }, [portfolioArr === null]); //run useEffect as long as portfolioArr is null
 
+  /*Handling search @TODO: Refactor this into a separate file to cleanup
+  as this is used across Watchlist and Portfolio :)
+  */
   const handleSearch = (text) => {
-    const newData = data.filter(item => {
-      const itemData = item.fullname.toLowerCase();
-      const textData = text.toLowerCase();
-      return itemData.indexOf(textData) > -1;
-    });
-    setData(newData); //set new data into data
-    setSearch(text);
+    const formattedQuery = text.toLowerCase();
+    const filteredData = filter(portfolioArr, data => {
+      return contains(data, formattedQuery);
+    })
+    console.log(filteredData);
+    setFilteredData(filteredData); //set filtered data into new data to be passed into Flatlist
+    //console.log(watchlistArr);
+    setSearch(text); //contains the input in search box
+  }
+
+  const contains = ({ sharesName }, query) => {
+    //destructuring sharesName from shares
+    //console.log(sharesName)
+    if (sharesName.toLowerCase().includes(query)) {
+      return true; //true if found
+    }
+    return false; //if not found
   }
 
   const renderItem = ({ item }) => {
@@ -121,11 +135,6 @@ function Portfolio({ navigation }) {
       <SearchBar
         placeholder="Search stock"
         onChangeText={
-          //(text) => { setSearch(text) }
-          //set arr = DATA obj upon clicking on this component. But think this is
-          //not the best idea because fulldata should contains element beforehand.
-          //Will refactor later
-          //setFullData(DATA);
           (text) => handleSearch(text)
         }
         //To get the query string. Will be use to filter the flatlist locally
@@ -141,7 +150,7 @@ function Portfolio({ navigation }) {
       <View style={styles.stockView}>
         <FlatList
           //data={DATA}
-          data={portfolioArr}
+          data={search === '' ? portfolioArr : filteredData}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           extraData={selectedId}
