@@ -33,6 +33,7 @@ export default function DetailsScreen({ route }) {
     sharesName,
     companyUrl,
   } = obj;
+
   const [exist, setExist] = useState(true); //it exists in db (as it's already in portfolio), hence TRUE
   const [stockId, setStockId] = useState(null);
   const [visibleToast, setVisibleToast] = useState(false); //for showing toast during button press

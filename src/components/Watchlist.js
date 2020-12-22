@@ -1,8 +1,10 @@
+/* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
+import filter from 'lodash.filter'; //for filtering searchbar
 
 import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
@@ -58,13 +60,18 @@ function Watchlist({ navigation }) {
 
   //For handling query to filter the stock listed in portfolio
   const handleSearch = (text) => {
-    const newData = data.filter(item => {
-      const itemData = item.fullname.toLowerCase();
-      const textData = text.toLowerCase();
-      return itemData.indexOf(textData) > -1;
-    });
+    const formattedQUery = text.toLowerCase();
+    const filteredData = filter(watchlistArr, data => {
+      return contains(data, formattedQUery);
+    })
     setData(newData); //set new data into data
     setSearch(text);
+  }
+
+  const contains = ({ sharesName }, query) => {
+    if (sharesName.includes(query)) {
+      return true
+    }
   }
 
   const renderItem = ({ item }) => {
