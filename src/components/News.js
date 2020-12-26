@@ -1,76 +1,78 @@
-/* eslint-disable react/prop-types */
-import React, { useState } from 'react';
+//* eslint-disable react/prop-types */
+import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { SearchBar } from 'react-native-elements';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-const DATA = [
-  {
-    global: {
-      list: [null, {
-        title: 'Huawei founder says phone unit sale will free it from US curbs',
-        url: 'https://www.theedgemarkets.com/article/huawei-founder-says-phone-unit-sale-will-free-it-us-curbs'
-      }],
-      sentiment: {
-        value: '0.585',
-        wordCloud: 'https://firebase....'
-      }
-    },
-    local: {
-      list: [null, {
-        title: 'Sarawak Consolidated Industries 3Q net profit leaps to RM12.43m',
-        url: 'https://www.theedgemarkets.com/article/sarawak-consolidated-industries-3q-net-profit-leaps-rm1243m'
-      }],
-      sentiment: {
-        value: '0.653',
-        wordCloud: 'https://firebase...'
-      }
-    }
-  }
-];
+import { firebase } from '../firebase/config';
+import styles from '../styles/News.style';
+//import DetailsScreen from './NewsDetailsScreen';
+
+const Tab = createMaterialTopTabNavigator();
+
+/*@deprecated
+function MyTabs() {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Global" component={News} />
+      <Tab.Screen name="Local" component={News} />
+    </Tab.Navigator>
+  );
+} */
+
 
 const Item = ({ item, onPress, style }) => {
 
   return (
     < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
       <View><Text>{item.title}</Text></View>
+      <View><Text>{item.date}</Text></View>
+      <View><Text>{item.compound}</Text></View>
       <View><Text>{item.url}</Text></View>
-      <View><Text>{item.value}</Text></View>
-      <View><Text>{item.wordCloud}</Text></View>
     </TouchableOpacity >
   );
 };
 
-function DetailsScreen({ route }) {
-  const { obj } = route.params; //destructuring
+function NewsGlobal({ navigation }) { //Global
 
-  //destructure. Maybe it's cleaner this way
-  const {
-    //list,
-    title,
-    url,
-    //sentiment,
-    value,
-    wordCloud,
-  } = obj;
+  const [selectedId, setSelectedId] = useState(null)
 
-  return (
-    <View style={styles.detailsView}>
+  const [data, setData] = useState('');
 
-      <Text>Title: <Text>{title}</Text></Text>
-      <Text>Url: <Text>{url}</Text></Text>
-      <Text>Value: <Text>{value}</Text></Text>
-      <Text>Word Cloud: <Text>{wordCloud}</Text></Text>
+  const [NewsArr, setNewsArr] = React.useState(null);
 
-    </View>
-  )
-}
+  useEffect(() => {
 
-function News({ navigation }) {
-  //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
-  const [search, setSearch] = useState(""); //for searchbar state
-  const [data, setData] = useState(DATA); //empty array to store list of items during query
+    let isMounted = true;
+
+
+    const newsRef = firebase.database().ref('/news/global/list');
+    newsRef.on('value', (snapshot) => {
+      if (isMounted) {
+        let news = [];
+        if (snapshot !== null) {
+          snapshot.forEach((child) => {
+            firebase.database().ref('/news/global/list/' + child.key).on('value', (childSnapshot) => {
+              //console.log(childSnapshot.val())
+              if (childSnapshot.val() !== null) {
+                news.push({
+                  id: childSnapshot.key,
+                  compound: childSnapshot.val().Compound,
+                  date: childSnapshot.val().Date,
+                  title: childSnapshot.val().Title,
+                  url: childSnapshot.val().Url
+                })
+              }
+            })
+          })
+        }
+        if (news !== null) {
+          setNewsArr(news);
+        }
+      }
+    })
+    return () => { isMounted = false };
+  }, [NewsArr === null]) //run as long as newsArr is null
 
   const renderItem = ({ item }) => {
     return (
@@ -93,74 +95,95 @@ function News({ navigation }) {
       <View style={styles.stockView}>
         <FlatList
           //data={DATA}
-          data={[data[0].global.list[1]]}
+          data={NewsArr}
           renderItem={renderItem}
-          keyExtractor={item => item.title}
+          keyExtractor={item => item.id}
         //extraData={selectedId}
         />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Local</Text>
+        </View>
       </View>
     </View>
+
   );
 }
 
-const styles = StyleSheet.create({
-  item: {
-    padding: 20,
-    height: 100,
-    width: 300,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    //marginRight: 50,
-    borderRadius: 10,
-  },
-  container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  header: {
-    fontSize: 20,
-    fontWeight: "400",
-  },
-  flatlist: {
-    borderRadius: 10,
-    backgroundColor: '#fff',
-    alignSelf: 'center',
-  },
-  view: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  stockView: {
-    width: '100%',
-    marginBottom: 60
-  },
-  searchBar: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  detailsView: {
-    backgroundColor: '#fff',
-    margin: 10,
-    padding: 10,
-  },
-})
+function NewsLocal({ navigation }) { //Local
 
-//<NewsStack.Screen name="News" component={News} />
+  const [selectedId, setSelectedId] = useState(null)
 
-/* depreceated as it cannot keep the respective tabs history
-function MyTabs() { //component top tab
+  const [data, setData] = useState('');
+
+  const [NewsArr, setNewsArr] = React.useState(null);
+
+  useEffect(() => {
+
+    let isMounted = true;
+
+
+    const newsRef = firebase.database().ref('/news/local/list');
+    newsRef.on('value', (snapshot) => {
+      if (isMounted) {
+        let news = [];
+        if (snapshot !== null) {
+          snapshot.forEach((child) => {
+            firebase.database().ref('/news/local/list/' + child.key).on('value', (childSnapshot) => {
+              //console.log(childSnapshot.val())
+              if (childSnapshot.val() !== null) {
+                news.push({
+                  id: childSnapshot.key,
+                  sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
+                  sharesName: childSnapshot.val().sharesName
+                })
+              }
+            })
+          })
+        }
+        if (news !== null) {
+          setNewsArr(news);
+        }
+      }
+    })
+    return () => { isMounted = false };
+  }, [NewsArr === null]) //run as long as newsArr is null
+
+  const renderItem = ({ item }) => {
+    return (
+      <Item
+        item={item}
+        style={styles.flatlist}
+        onPress={() => {
+          //setSelectedId(item.id);
+          navigation.navigate('Details', {
+            //itemId: item.id,
+            obj: item, //objects of clicked element
+          });
+        }}
+      />
+    );
+  }
+
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Global" component={News} />
-      <Tab.Screen name="Local" component={News} />
-    </Tab.Navigator>
-  )
+    <View style={styles.view}>
+      <View style={styles.stockView}>
+        <FlatList
+          //data={DATA}
+          data={NewsArr}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        //extraData={selectedId}
+        />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <Text>Global</Text>
+        </View>
+      </View>
+    </View>
+
+  );
 }
-*/
 
-
+//Stack for global and local news
 //Create stack to keep global news tab history
 const GlobalStack = createStackNavigator();
 
@@ -168,7 +191,7 @@ const GlobalStack = createStackNavigator();
 function Global() {
   return (
     <GlobalStack.Navigator>
-      <GlobalStack.Screen name="Global" component={News} />
+      <GlobalStack.Screen name="Global" component={NewsGlobal} />
     </GlobalStack.Navigator>
   )
 }
@@ -180,15 +203,13 @@ const LocalStack = createStackNavigator();
 function Local() {
   return (
     <LocalStack.Navigator>
-      <LocalStack.Screen name="Local" component={News} />
+      <LocalStack.Screen name="Local" component={NewsLocal} />
     </LocalStack.Navigator>
   )
 }
 
-//create top tab stack
-const Tab = createMaterialTopTabNavigator();
+const NewsStack = createStackNavigator();
 
-//For rendering the screen for Global and Local tabs.
 export default function NewsStackScreen() {
   return (
     <Tab.Navigator>
