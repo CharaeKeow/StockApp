@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons, AntDesign, Entypo } from '@expo/vector-icons';
 
+import MarketStackScreen from './src/components/Market';
 import NewsStackScreen from './src/components/News';
 import PortfolioStackScreen from './src/components/Portfolio';
 import WatchlistStackScreen from './src/components/Watchlist';
@@ -37,7 +38,7 @@ function BottomTab() {
         options={{
           tabBarLabel: 'Portfolio',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <Entypo name="bookmarks" color={color} size={size} />
           ),
         }}
       />
@@ -58,6 +59,17 @@ function BottomTab() {
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="newspaper" size={size} color={color} />
+
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Market"
+        component={MarketStackScreen}
+        options={{
+          tabBarLabel: 'Market',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="storefront-outline" size={size} color={color} />
 
           ),
         }}
