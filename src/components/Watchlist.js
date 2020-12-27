@@ -65,8 +65,8 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
         <View style={{ flex: 10, paddingRight: 15 }}>
           <AreaChart
             style={{ height: 40, width: 90 }}
-            data={[2, 4, 5, 6, 7, 8, 15, 7, 5, 4, 4, 5, 7, 6, 5, 4]}
-            // contentInset={{ top: 30, bottom: 30 }}
+            data={item.days30ClosePriceData.split(',').map( n => parseFloat(n*-1))}
+            contentInset={{ top: 30, bottom: 30 }}
             curve={shape.curveNatural}
             svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
           >
@@ -99,7 +99,8 @@ function Watchlist({ navigation }) {
                 watchlist.push({
                   id: childSnapshot.key,
                   sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
-                  sharesName: childSnapshot.val().sharesName
+                  sharesName: childSnapshot.val().sharesName,
+                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData
                 })
               }
             })
