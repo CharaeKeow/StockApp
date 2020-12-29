@@ -1,6 +1,4 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -16,23 +14,14 @@ import Login from './src/components/Login'
 import { firebase } from './src/firebase/config';
 import TimerErrorHandler from './src/utils/TimerErrorHandler';
 
-/*To suppress (hide) yellow warning due to firebase setting a long timer. It's just a warning and nothing
- * can be done to fix it unless using a native Adroid firebase (which I plan to)
- * So for now hiding it seems to be the best fix :)
- * And this is for development only (I think)
- */
+
 TimerErrorHandler();
 
 const Tab = createBottomTabNavigator();
 
 function BottomTab() {
   return (
-    <Tab.Navigator
-      initialRouteName="Portfolio"
-      tabBarOptions={{
-        activeTintColor: '#e91e63',
-      }}
-    >
+    <Tab.Navigator initialRouteName="Portfolio" tabBarOptions={{ activeTintColor: '#e91e63' }} >
       <Tab.Screen
         name="Portfolio"
         component={PortfolioStackScreen}
