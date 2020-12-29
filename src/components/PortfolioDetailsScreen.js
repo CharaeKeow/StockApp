@@ -5,7 +5,6 @@ import { Button, Text, View, ToastAndroid } from 'react-native';
 import styles from '../styles/Portfolio.style';
 import { firebase } from '../firebase/config'
 
-
 //@TODO LOW PRIORITY Use react-native-toast-message instead of default toast as that one can be styled.
 
 //first obtain the user node

@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable react/no-children-prop */
+/* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import { FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
@@ -6,9 +9,11 @@ import { SearchBar } from 'react-native-elements';
 import { AreaChart } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import filter from 'lodash.filter';
+import { Entypo } from '@expo/vector-icons';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { firebase } from '../firebase/config';
-import DetailsScreen from './PortfolioDetailsScreen';
+import UserProfile from './UserProfile';
 import styles from '../styles/Portfolio.style';
 
 //first obtain the user node
@@ -195,11 +200,23 @@ export default function PortfolioStackScreen() {
       <PortfolioStack.Screen
         name="Portfolio"
         component={Portfolio}
+        options={({ navigation }) => ({
+          headerRight: () => (
+            <View>
+              <Menu name="menu-1">
+                <MenuTrigger children={<Entypo name="dots-three-vertical" size={24} color="black" />} />
+                <MenuOptions>
+                  <MenuOption text="Refresh" />
+                  <MenuOption text="Setting" onSelect={() => navigation.navigate('UserProfile')} />
+                </MenuOptions>
+              </Menu>
+            </View>
+          )
+        })}
       />
       <PortfolioStack.Screen
-        name="Details"
-        component={DetailsScreen}
-        options={({ route }) => ({ title: route.params.obj.sharesName })}
+        name="UserProfile"
+        component={UserProfile}
       />
     </PortfolioStack.Navigator>
   )
