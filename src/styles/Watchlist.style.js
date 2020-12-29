@@ -1,14 +1,12 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export default StyleSheet.create({
   item: {
-    padding: 20,
-    height: 100,
-    width: 300,
-    marginVertical: 8,
-    marginHorizontal: 16,
-    //marginRight: 50,
-    borderRadius: 10,
+    padding: 18,
+    height: 80,
+    width: Dimensions.get('window').width - 25,
+    marginVertical: 6,
+    borderRadius: 15,
   },
   container: {
     flexDirection: "row",

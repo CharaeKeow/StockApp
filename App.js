@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import { MenuProvider } from 'react-native-popup-menu';
 
 import NewsStackScreen from './src/components/News';
 import PortfolioStackScreen from './src/components/Portfolio';
@@ -80,21 +81,23 @@ export default function App() {
   }, []); //run only if user change or during initial load
 
   /*
-    firebase.auth().signOut().then(function () {
-      // Sign-out successful.
-    }).catch(function (error) {
-      // An error happened.
-    });
+  firebase.auth().signOut().then(function () {
+    // Sign-out successful.
+  }).catch(function (error) {
+    console.log(error);
+  });
   */
 
   return (
-    <NavigationContainer>
-      {user !== null ? <BottomTab /> : (
-        <Stack.Navigator>
-          <Stack.Screen name="Login" component={Login} />
-          <Stack.Screen name="Registration" component={Registration} />
-        </Stack.Navigator>
-      )}
-    </NavigationContainer>
+    <MenuProvider>
+      <NavigationContainer>
+        {user !== null ? <BottomTab /> : (
+          <Stack.Navigator>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Registration" component={Registration} />
+          </Stack.Navigator>
+        )}
+      </NavigationContainer>
+    </MenuProvider>
   );
 }

@@ -1,21 +1,81 @@
+/* eslint-disable no-undef */
+/* eslint-disable react/no-children-prop */
+/* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View, Text } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
+import { AreaChart } from 'react-native-svg-charts';
+import * as shape from 'd3-shape';
+import filter from 'lodash.filter';
+import { Entypo } from '@expo/vector-icons';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { firebase } from '../firebase/config';
-import DetailsScreen from './PortfolioDetailsScreen';
+import UserProfile from './UserProfile';
 import styles from '../styles/Portfolio.style';
 
-const Item = ({ item, onPress, style }) => {
+//first obtain the user node
+const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
+
+const Item = ({ item, style, id }) => {
+  const [exist, setExist] = useState(true); //it exists in db (as it's already in portfolio), hence TRUE
+  const [stockId, setStockId] = useState(null);
+
+  const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+  const userPortfolioListRemoveChildRef = (stockId) => firebase.database().ref('/users/' + uid + '/portfolio/' + stockId);
+
+  useEffect(() => {
+    userPortfolioListRef.once('value', (snapshot) => {
+      console.log(snapshot);
+      snapshot.forEach((child) => {
+        if (child.val() === id) {
+          setStockId(child.key);
+        }
+      })
+    })
+  }, []) //run once on each render
+
+  //long pressing will remove item from portfolio
+  const handlerLongClick = () => {
+    Alert.alert(
+      'DELETE',
+      'Are you sure?', // <- this part is optional, you can pass an empty string
+      [
+        {
+          text: 'Yes', onPress: () => {
+            //console.log('YES Pressed');
+            userPortfolioListRemoveChildRef(stockId).remove();
+          }
+        }, // insert DELETE function
+        { text: 'No', onPress: () => console.log('NO Pressed') },
+      ],
+      { cancelable: false },
+    );
+  };
 
   return (
-    < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
-      <View style={styles.container}>
-        <Text style={[styles.title, styles.header]}>{item.sharesName}</Text>
-        <Text style={{ color: 'green' }}>{item.sentiValue}</Text>
-        <Text>{item.bbStatus}</Text>
+    <TouchableOpacity onLongPress={handlerLongClick} onPress={() => { Linking.openURL(item.companyUrl) }} style={[styles.item, style]} >
+      <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: "bold", paddingRight: 15 }}>{item.sharesName}<Text style={{ fontSize: 18, fontWeight: "bold", paddingLeft: 6, color: 'green' }}>   RM {item.sharesCurrPrice}</Text></Text>
+      <View style={{ flexDirection: "row" }}>
+        <View style={{ paddingTop: 20, paddingLeft: 12, backgroundColor: '#fff', flex: 1.5 }}>
+          <Text>EMA 50   : <Text>{item.ema50}</Text></Text>
+          <Text>EMA 100 : <Text>{item.ema100}</Text></Text>
+          <Text>EMA 200 : <Text>{item.ema200}</Text></Text>
+          <Text>SA Score : <Text>{item.sentiValue}</Text></Text>
+          <Text>BB Status: <Text>{item.bbStatus}</Text></Text>
+        </View>
+        <View style={{ paddingRight: 12, flex: 1 }}>
+          <AreaChart
+            style={{ paddingTop: 15, height: 100, width: 110 }}
+            data={[6.01, 8.02, 5.05, 9.59, 8.5, 9.1, 6.547, 5.03, 4.46, 5.01]}
+            contentInset={{ top: 20, bottom: 20 }}
+            curve={shape.curveNatural}
+            svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
+          >
+          </AreaChart>
+        </View>
       </View>
     </TouchableOpacity >
   );
@@ -26,9 +86,9 @@ function Portfolio({ navigation }) {
   //const [stockId, setStockId] = React.useState([]);
   const [search, setSearch] = useState(''); //for searchbar state
   //For handling query to filter the stock listed in portfolio
-  const [data, setData] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
   //array to keep list of portfolio fetch from Firebase
-  const [portfolioArr, setPortfolioArr] = React.useState(null);
+  const [portfolioArr, setPortfolioArr] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -37,18 +97,18 @@ function Portfolio({ navigation }) {
         let portfolio = [];
         if (snapshot !== undefined || null) { //because this node has child === null
           snapshot.forEach((child => {
-            firebase.database().ref('/processedData/' + child.val()).on('value', (snapshot) => {
-              if (snapshot.val() !== null) {
+            firebase.database().ref('/processedData/' + child.val()).on('value', (childSnapshot) => {
+              if (childSnapshot.val() !== null) {
                 portfolio.push({
-                  id: snapshot.key,
-                  bbStatus: snapshot.val().bbStatus,
-                  ema50: snapshot.val().ema50,
-                  ema100: snapshot.val().ema100,
-                  ema200: snapshot.val().ema200,
-                  sharesCurrPrice: snapshot.val().sharesCurrPrice,
-                  sentiValue: snapshot.val().sentiValue,
-                  sharesName: snapshot.val().sharesName,
-                  companyUrl: snapshot.val().companyurl,
+                  id: childSnapshot.key,
+                  bbStatus: childSnapshot.val().bbStatus,
+                  ema50: childSnapshot.val().ema50,
+                  ema100: childSnapshot.val().ema100,
+                  ema200: childSnapshot.val().ema200,
+                  sharesCurrPrice: childSnapshot.val().sharesCurrPrice,
+                  sentiValue: childSnapshot.val().sentiValue,
+                  sharesName: childSnapshot.val().sharesName,
+                  companyUrl: childSnapshot.val().companyurl,
                 });
               }
             });
@@ -62,30 +122,39 @@ function Portfolio({ navigation }) {
     return () => { isMounted = false };
   }, [portfolioArr === null]); //run useEffect as long as portfolioArr is null
 
-  React.useEffect(() => {
-    console.log(portfolioArr);
-    console.log();
-  }, [])
-
+  /*Handling search @TODO: Refactor this into a separate file to cleanup
+  as this is used across Watchlist and Portfolio :)
+  */
   const handleSearch = (text) => {
-    const newData = data.filter(item => {
-      const itemData = item.fullname.toLowerCase();
-      const textData = text.toLowerCase();
-      return itemData.indexOf(textData) > -1;
-    });
-    setData(newData); //set new data into data
-    setSearch(text);
+    const formattedQuery = text.toLowerCase();
+    const filteredData = filter(portfolioArr, data => {
+      return contains(data, formattedQuery);
+    })
+    console.log(filteredData);
+    setFilteredData(filteredData); //set filtered data into new data to be passed into Flatlist
+    //console.log(watchlistArr);
+    setSearch(text); //contains the input in search box
+  }
+
+  const contains = ({ sharesName }, query) => {
+    //destructuring sharesName from shares
+    //console.log(sharesName)
+    if (sharesName.toLowerCase().includes(query)) {
+      return true; //true if found
+    }
+    return false; //if not found
   }
 
   const renderItem = ({ item }) => {
     return (
       <Item
+        id={item.id} //pass id of each item (stock)
         item={item}
         style={styles.flatlist}
         onPress={() => {
           setSelectedId(item.id);
           navigation.navigate('Details', {
-            //itemId: item.id,
+            itemId: item.id,
             obj: item, //objects of clicked element
           });
         }}
@@ -98,11 +167,6 @@ function Portfolio({ navigation }) {
       <SearchBar
         placeholder="Search stock"
         onChangeText={
-          //(text) => { setSearch(text) }
-          //set arr = DATA obj upon clicking on this component. But think this is
-          //not the best idea because fulldata should contains element beforehand.
-          //Will refactor later
-          //setFullData(DATA);
           (text) => handleSearch(text)
         }
         //To get the query string. Will be use to filter the flatlist locally
@@ -116,10 +180,9 @@ function Portfolio({ navigation }) {
         style={styles.searchBar}
       />
       <View style={styles.stockView}>
-        {/*console.log(portfolioArr)*/}
         <FlatList
           //data={DATA}
-          data={portfolioArr}
+          data={search === '' ? portfolioArr : filteredData}
           renderItem={renderItem}
           keyExtractor={item => item.id}
           extraData={selectedId}
@@ -137,11 +200,23 @@ export default function PortfolioStackScreen() {
       <PortfolioStack.Screen
         name="Portfolio"
         component={Portfolio}
+        options={({ navigation }) => ({
+          headerRight: () => (
+            <View>
+              <Menu name="menu-1">
+                <MenuTrigger children={<Entypo name="dots-three-vertical" size={24} color="black" />} />
+                <MenuOptions>
+                  <MenuOption text="Refresh" />
+                  <MenuOption text="Setting" onSelect={() => navigation.navigate('UserProfile')} />
+                </MenuOptions>
+              </Menu>
+            </View>
+          )
+        })}
       />
       <PortfolioStack.Screen
-        name="Details"
-        component={DetailsScreen}
-        options={({ route }) => ({ title: route.params.obj.sharesName })}
+        name="UserProfile"
+        component={UserProfile}
       />
     </PortfolioStack.Navigator>
   )

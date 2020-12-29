@@ -190,8 +190,13 @@ const GlobalStack = createStackNavigator();
 //component and stack for Global news
 function Global() {
   return (
-    <GlobalStack.Navigator>
-      <GlobalStack.Screen name="Global" component={NewsGlobal} />
+    <GlobalStack.Navigator screenOptions={{
+      headerShown: false
+    }}>
+      <GlobalStack.Screen name="Global" component={NewsGlobal} screenOptions={{
+        headerShown: false
+      }}
+      />
     </GlobalStack.Navigator>
   )
 }
@@ -202,8 +207,11 @@ const LocalStack = createStackNavigator();
 //component and stack for Global news
 function Local() {
   return (
-    <LocalStack.Navigator>
-      <LocalStack.Screen name="Local" component={NewsLocal} />
+    <LocalStack.Navigator screenOptions={{
+      headerShown: false
+    }}>
+      <LocalStack.Screen name="Local" component={NewsLocal}
+      />
     </LocalStack.Navigator>
   )
 }
@@ -213,7 +221,8 @@ const NewsStack = createStackNavigator();
 export default function NewsStackScreen() {
   return (
     <Tab.Navigator>
-      <Tab.Screen name="Global" component={Global} />
+      <Tab.Screen name="Global" component={Global}
+      />
       <Tab.Screen name="Local" component={Local} />
     </Tab.Navigator>
   );

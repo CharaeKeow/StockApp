@@ -8,8 +8,6 @@ import { firebase } from '../firebase/config';
 const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
-
-
 export default function DetailsScreen({ route }) {
   const [exist, setExist] = useState(false); //already exist in porfolio or not
   const { obj } = route.params;
@@ -18,7 +16,6 @@ export default function DetailsScreen({ route }) {
     sharesCurrentPrice,
     sharesName,
   } = obj;
-
 
   const newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
   const addToPortfolio = (id) => {
