@@ -216,8 +216,6 @@ function Local() {
   )
 }
 
-const NewsStack = createStackNavigator();
-
 export default function NewsStackScreen() {
   return (
     <Tab.Navigator>
