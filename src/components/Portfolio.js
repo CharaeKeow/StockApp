@@ -3,7 +3,9 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
+import {  FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
+import { AntDesign } from '@expo/vector-icons';
+import DialogInput from 'react-native-dialog-input';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
 import { AreaChart } from 'react-native-svg-charts';
@@ -16,7 +18,6 @@ import { firebase } from '../firebase/config';
 import UserProfile from './UserProfile';
 import styles from '../styles/Portfolio.style';
 
-//first obtain the user node
 const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 
 const Item = ({ item, style, id }) => {
@@ -82,6 +83,7 @@ const Item = ({ item, style, id }) => {
 };
 
 function Portfolio({ navigation }) {
+
   const [selectedId, setSelectedId] = useState(null)
   //const [stockId, setStockId] = React.useState([]);
   const [search, setSearch] = useState(''); //for searchbar state
@@ -156,6 +158,17 @@ function Portfolio({ navigation }) {
     );
   }
 
+  const [visible, setVisible] = useState(false);
+  function showDialog() {
+    setVisible(true);
+  }
+
+
+  const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
+  const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+  const newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
+  const addToPortfolio = (receiveInput) => { newPortfolioRef.set(receiveInput) }
+
   return (
     <View style={styles.view}>
       <SearchBar
@@ -181,6 +194,31 @@ function Portfolio({ navigation }) {
           keyExtractor={item => item.id}
           extraData={selectedId}
         />
+      </View>
+
+      <TouchableOpacity style={{
+            borderWidth:6,
+            borderColor:'rgba(0,0,0,0.03)',
+            alignItems:'center',
+            justifyContent:'center',
+            position: 'absolute',                                          
+            bottom: 12,                                                    
+            right: 20,
+            backgroundColor:'#fff',
+            borderRadius:100,
+          }} 
+          onPress={() => { showDialog() }} >
+        <AntDesign name="pluscircle" size={58} color="#01a699" />
+      </TouchableOpacity>
+      <View>
+      <DialogInput 
+            isDialogVisible={visible}
+            title={"PORTFOLIO"}
+            message={"Add new shares"}
+            hintInput ={"Enter shares' code"}
+            submitInput={ (inputText) => {addToPortfolio(inputText)} }
+            closeDialog={() => {setVisible(false)}}>
+        </DialogInput>
       </View>
     </View>
   );
