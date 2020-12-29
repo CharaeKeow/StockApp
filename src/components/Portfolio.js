@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+/* eslint-disable react/no-children-prop */
+/* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
 import {  FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
@@ -8,8 +11,11 @@ import { SearchBar } from 'react-native-elements';
 import { AreaChart } from 'react-native-svg-charts';
 import * as shape from 'd3-shape';
 import filter from 'lodash.filter';
+import { Entypo } from '@expo/vector-icons';
+import { Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 
 import { firebase } from '../firebase/config';
+import UserProfile from './UserProfile';
 import styles from '../styles/Portfolio.style';
 
 const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
@@ -64,14 +70,14 @@ const Item = ({ item, style, id }) => {
         <View style={{ paddingRight: 12, flex: 1 }}>
           <AreaChart
             style={{ paddingTop: 15, height: 100, width: 110 }}
-            data={item.Days30ClosePriceData.split(',').map( n => parseFloat(n))}
+            data={item.Days30ClosePriceData.split(',').map(n => parseFloat(n))}
             contentInset={{ top: 20, bottom: 20 }}
             curve={shape.curveNatural}
             svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
           >
           </AreaChart>
         </View>
-      </View>
+      </View >
     </TouchableOpacity >
   );
 };
@@ -226,7 +232,24 @@ export default function PortfolioStackScreen() {
       <PortfolioStack.Screen
         name="Portfolio"
         component={Portfolio}
+        options={({ navigation }) => ({
+          headerRight: () => (
+            <View>
+              <Menu name="menu-1">
+                <MenuTrigger children={<Entypo name="dots-three-vertical" size={24} color="black" />} />
+                <MenuOptions>
+                  <MenuOption text="Refresh" />
+                  <MenuOption text="Setting" onSelect={() => navigation.navigate('UserProfile')} />
+                </MenuOptions>
+              </Menu>
+            </View>
+          )
+        })}
       />
-    </PortfolioStack.Navigator>
+      <PortfolioStack.Screen
+        name="UserProfile"
+        component={UserProfile}
+      />
+    </PortfolioStack.Navigator >
   )
 }

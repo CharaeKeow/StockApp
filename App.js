@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons, AntDesign, Entypo } from '@expo/vector-icons';
+import { MenuProvider } from 'react-native-popup-menu';
 
 import MarketStackScreen from './src/components/Market';
 import NewsStackScreen from './src/components/News';
@@ -79,24 +80,24 @@ export default function App() {
   }, []); //run only if user change or during initial load
 
   /*
-    firebase.auth().signOut().then(function () {
-      // Sign-out successful.
-    }).catch(function (error) {
-      // An error happened.
-    });
+  firebase.auth().signOut().then(function () {
+    // Sign-out successful.
+  }).catch(function (error) {
+    console.log(error);
+  });
   */
 
   return (
-    <NavigationContainer>
-      {
-        user !== null ? <BottomTab /> : 
-        (
+    <MenuProvider>
+      <NavigationContainer>
+        {console.log(user)}
+        {user !== null ? <BottomTab /> : (
           <Stack.Navigator>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Registration" component={Registration} />
           </Stack.Navigator>
-        )
-      }
-    </NavigationContainer>
+        )}
+      </NavigationContainer>
+    </MenuProvider>
   );
 }
