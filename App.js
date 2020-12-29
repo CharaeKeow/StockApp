@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/display-name */
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -50,7 +48,6 @@ function BottomTab() {
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="newspaper" size={size} color={color} />
-
           ),
         }}
       />
@@ -60,8 +57,7 @@ function BottomTab() {
         options={{
           tabBarLabel: 'Market',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="storefront-outline" size={size} color={color} />
-
+            <MaterialCommunityIcons name="store" size={size} color={color} />
           ),
         }}
       />

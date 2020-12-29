@@ -68,7 +68,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
             data={item.days30ClosePriceData.split(',').map( n => parseFloat(n*-1))}
             contentInset={{ top: 30, bottom: 30 }}
             curve={shape.curveNatural}
-            svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
+            svg={{ fill: 'rgba(134, 65, 244, 0.8)'}}
           >
           </AreaChart>
         </View>
