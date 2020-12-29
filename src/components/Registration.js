@@ -20,7 +20,8 @@ export default function Registration({ navigation }) {
   const onRegisterPress = () => {
     if (password !== confirmPassword) { //alert password doesn't match
       alert("Passwords do not match!");
-    } else {
+    } 
+    else {
 
       firebase
         .auth()
@@ -31,12 +32,12 @@ export default function Registration({ navigation }) {
           })
 
           //Send verification email
-          /* Disble for now as it is a bit hassle for testing
+          //Disble for now as it is a bit hassle for testing
           firebase.auth().currentUser.sendEmailVerification().then(() => {
             console.log('Email sent');
             //console.log(user);
           });
-          */
+          
 
           console.log(res); //output user
           alert('Registration successful. Please verify your email to login');
@@ -60,8 +61,10 @@ export default function Registration({ navigation }) {
         .catch((error) => {
           console.log(error.toString(error))
         });
+
+        navigation.navigate('Login');
+      }
     }
-  }
 
   return (
     <View style={styles.container}>
