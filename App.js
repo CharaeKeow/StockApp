@@ -60,7 +60,6 @@ function BottomTab() {
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="newspaper" size={size} color={color} />
-
           ),
         }}
       />
@@ -70,8 +69,7 @@ function BottomTab() {
         options={{
           tabBarLabel: 'Market',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="storefront-outline" size={size} color={color} />
-
+            <MaterialCommunityIcons name="store" size={size} color={color} />
           ),
         }}
       />
@@ -103,6 +101,7 @@ export default function App() {
   return (
     <MenuProvider>
       <NavigationContainer>
+        {console.log(user)}
         {user !== null ? <BottomTab /> : (
           <Stack.Navigator>
             <Stack.Screen name="Login" component={Login} />
