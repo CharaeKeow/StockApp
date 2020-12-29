@@ -69,14 +69,14 @@ const Item = ({ item, style, id }) => {
         <View style={{ paddingRight: 12, flex: 1 }}>
           <AreaChart
             style={{ paddingTop: 15, height: 100, width: 110 }}
-            data={[6.01, 8.02, 5.05, 9.59, 8.5, 9.1, 6.547, 5.03, 4.46, 5.01]}
+            data={item.Days30ClosePriceData.split(',').map(n => parseFloat(n))}
             contentInset={{ top: 20, bottom: 20 }}
             curve={shape.curveNatural}
             svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
           >
           </AreaChart>
         </View>
-      </View>
+      </View >
     </TouchableOpacity >
   );
 };
@@ -109,6 +109,7 @@ function Portfolio({ navigation }) {
                   sentiValue: childSnapshot.val().sentiValue,
                   sharesName: childSnapshot.val().sharesName,
                   companyUrl: childSnapshot.val().companyurl,
+                  Days30ClosePriceData: childSnapshot.val().Days30ClosePriceData
                 });
               }
             });
@@ -151,13 +152,6 @@ function Portfolio({ navigation }) {
         id={item.id} //pass id of each item (stock)
         item={item}
         style={styles.flatlist}
-        onPress={() => {
-          setSelectedId(item.id);
-          navigation.navigate('Details', {
-            itemId: item.id,
-            obj: item, //objects of clicked element
-          });
-        }}
       />
     );
   }
@@ -218,6 +212,6 @@ export default function PortfolioStackScreen() {
         name="UserProfile"
         component={UserProfile}
       />
-    </PortfolioStack.Navigator>
+    </PortfolioStack.Navigator >
   )
 }

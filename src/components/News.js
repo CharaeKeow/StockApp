@@ -1,34 +1,45 @@
 //* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { FlatList, TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, Linking, Dimensions } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
+import { VictoryPie } from "victory-native";
 import { firebase } from '../firebase/config';
 import styles from '../styles/News.style';
-//import DetailsScreen from './NewsDetailsScreen';
 
 const Tab = createMaterialTopTabNavigator();
 
-/*@deprecated
-function MyTabs() {
+function array(param) {
+  var values = new Array();
+
+    values[0] = 0.5 + (param/2);
+    values[1] = 0.5 - (param/2);
+  
+  return values;
+}
+
+const Item = ({ item, style }) => {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Global" component={News} />
-      <Tab.Screen name="Local" component={News} />
-    </Tab.Navigator>
-  );
-} */
+    <TouchableOpacity onPress={()=>{ Linking.openURL(item.url)}} style={[styles.item, style]}>
+        <View  style={{flexDirection: "column"}}>
+          <View style={{flex:1.5}}>
+            <Text style={{fontSize:16, fontWeight:'bold'}}>{item.title}</Text>
+            <Text style={{paddingTop:6}}>{item.date}</Text>
+            <Text>SA Score: {item.compound}</Text>
+          </View>
+          <View style={{justifyContent:'center', paddingLeft:Dimensions.get('window').width/3.5, paddingTop:10, flex:1}}>
+            <VictoryPie
+              height={200}
+              width={200}
+              padding={55}
+              innerRadius={20}
+              colorScale={["green","red" ]}
+              data={array(item.compound)}
+              labels={["Good", "Bad"]}
+            />
+        </View>
+        </View>
 
-
-const Item = ({ item, onPress, style }) => {
-
-  return (
-    < TouchableOpacity onPress={onPress} style={[styles.item, style]} >
-      <View><Text>{item.title}</Text></View>
-      <View><Text>{item.date}</Text></View>
-      <View><Text>{item.compound}</Text></View>
-      <View><Text>{item.url}</Text></View>
     </TouchableOpacity >
   );
 };
@@ -36,15 +47,11 @@ const Item = ({ item, onPress, style }) => {
 function NewsGlobal({ navigation }) { //Global
 
   const [selectedId, setSelectedId] = useState(null)
-
   const [data, setData] = useState('');
-
   const [NewsArr, setNewsArr] = React.useState(null);
 
   useEffect(() => {
-
     let isMounted = true;
-
 
     const newsRef = firebase.database().ref('/news/global/list');
     newsRef.on('value', (snapshot) => {
@@ -100,9 +107,6 @@ function NewsGlobal({ navigation }) { //Global
           keyExtractor={item => item.id}
         //extraData={selectedId}
         />
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Local</Text>
-        </View>
       </View>
     </View>
 
@@ -112,15 +116,11 @@ function NewsGlobal({ navigation }) { //Global
 function NewsLocal({ navigation }) { //Local
 
   const [selectedId, setSelectedId] = useState(null)
-
   const [data, setData] = useState('');
-
   const [NewsArr, setNewsArr] = React.useState(null);
 
   useEffect(() => {
-
     let isMounted = true;
-
 
     const newsRef = firebase.database().ref('/news/local/list');
     newsRef.on('value', (snapshot) => {
@@ -133,8 +133,10 @@ function NewsLocal({ navigation }) { //Local
               if (childSnapshot.val() !== null) {
                 news.push({
                   id: childSnapshot.key,
-                  sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
-                  sharesName: childSnapshot.val().sharesName
+                  compound: childSnapshot.val().Compound,
+                  date: childSnapshot.val().Date,
+                  title: childSnapshot.val().Title,
+                  url: childSnapshot.val().Url
                 })
               }
             })
@@ -153,13 +155,6 @@ function NewsLocal({ navigation }) { //Local
       <Item
         item={item}
         style={styles.flatlist}
-        onPress={() => {
-          //setSelectedId(item.id);
-          navigation.navigate('Details', {
-            //itemId: item.id,
-            obj: item, //objects of clicked element
-          });
-        }}
       />
     );
   }
@@ -174,9 +169,6 @@ function NewsLocal({ navigation }) { //Local
           keyExtractor={item => item.id}
         //extraData={selectedId}
         />
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text>Global</Text>
-        </View>
       </View>
     </View>
 
@@ -215,8 +207,6 @@ function Local() {
     </LocalStack.Navigator>
   )
 }
-
-const NewsStack = createStackNavigator();
 
 export default function NewsStackScreen() {
   return (
