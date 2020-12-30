@@ -32,7 +32,6 @@ function Market({ navigation }) {
     })
   }, []); //run once on component load
 
-
   return (
     <ScrollView>
       <View style={styles.container}>
