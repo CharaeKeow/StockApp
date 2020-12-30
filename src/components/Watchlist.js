@@ -14,24 +14,6 @@ import styles from '../styles/Watchlist.style';
 const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
-//for pressing item on the watchlist, which will trigger an alert
-//asking user to add item to portfolio or not
-const onPress = () => {
-  Alert.alert(
-    'ADD TO PROTFOLIO',
-    'Are you sure?', // <- this part is optional, you can pass an empty string
-    [
-      {
-        text: 'Yes', onPress: () => {
-          addToPortfolio(id) //add to firebase user's portfolio
-        }
-      }, // insert ADD TO PORTFOLIO function
-      { text: 'No', onPress: () => console.log('NO Pressed') },
-    ],
-    { cancelable: false },
-  );
-};
-
 const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
   const [exist, setExist] = useState(false); //already exist in porfolio or not
 
@@ -44,7 +26,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
 
   //for pressing item on the watchlist, which will trigger an alert
   //asking user to add item to portfolio or not
-  const onPress = () => {
+  const handleClickItem = () => {
     Alert.alert(
       'ADD TO PROTFOLIO',
       'Are you sure?', // <- this part is optional, you can pass an empty string
@@ -72,7 +54,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
   })
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.item, style]} >
+    <TouchableOpacity onPress={handleClickItem} style={[styles.item, style]} >
       <View style={styles.container}>
         <View style={{ flex: 15 }}>
           <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingTop: 11, paddingRight: 15 }} >{item.sharesName}</Text>
@@ -86,7 +68,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
             data={item.days30ClosePriceData.split(',').map(n => parseFloat(n * -1))}
             contentInset={{ top: 30, bottom: 30 }}
             curve={shape.curveNatural}
-            svg={{ fill: 'rgba(134, 65, 244, 0.8)'}}
+            svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
           >
           </AreaChart>
         </View>
@@ -186,7 +168,7 @@ function Watchlist({ navigation }) {
           data={search === '' ? watchlistArr : filteredData}
           renderItem={renderItem}
           keyExtractor={item => item.id}
-          extraData={selectedId}
+        //extraData={selectedId}
         />
       </View>
     </View>
