@@ -1,12 +1,11 @@
-/* eslint-disable react/prop-types */
-/* eslint-disable react/display-name */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { MaterialCommunityIcons, AntDesign } from '@expo/vector-icons';
+import { MaterialCommunityIcons, AntDesign, Entypo } from '@expo/vector-icons';
 import { MenuProvider } from 'react-native-popup-menu';
 
+import MarketStackScreen from './src/components/Market';
 import NewsStackScreen from './src/components/News';
 import PortfolioStackScreen from './src/components/Portfolio';
 import WatchlistStackScreen from './src/components/Watchlist';
@@ -15,30 +14,21 @@ import Login from './src/components/Login'
 import { firebase } from './src/firebase/config';
 import TimerErrorHandler from './src/utils/TimerErrorHandler';
 
-/*To suppress (hide) yellow warning due to firebase setting a long timer. It's just a warning and nothing
- * can be done to fix it unless using a native Adroid firebase (which I plan to)
- * So for now hiding it seems to be the best fix :)
- * And this is for development only (I think)
- */
+
 TimerErrorHandler();
 
 const Tab = createBottomTabNavigator();
 
 function BottomTab() {
   return (
-    <Tab.Navigator
-      initialRouteName="Portfolio"
-      tabBarOptions={{
-        activeTintColor: '#e91e63',
-      }}
-    >
+    <Tab.Navigator initialRouteName="Portfolio" tabBarOptions={{ activeTintColor: '#e91e63' }} >
       <Tab.Screen
         name="Portfolio"
         component={PortfolioStackScreen}
         options={{
           tabBarLabel: 'Portfolio',
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
+            <Entypo name="bookmarks" color={color} size={size} />
           ),
         }}
       />
@@ -59,7 +49,16 @@ function BottomTab() {
           tabBarLabel: 'News',
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="newspaper" size={size} color={color} />
-
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Market"
+        component={MarketStackScreen}
+        options={{
+          tabBarLabel: 'Market',
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="store" size={size} color={color} />
           ),
         }}
       />
@@ -91,6 +90,7 @@ export default function App() {
   return (
     <MenuProvider>
       <NavigationContainer>
+        {console.log(user)}
         {user !== null ? <BottomTab /> : (
           <Stack.Navigator>
             <Stack.Screen name="Login" component={Login} />

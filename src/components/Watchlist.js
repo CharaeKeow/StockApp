@@ -10,10 +10,27 @@ import * as shape from 'd3-shape';
 
 import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
-import DetailsScreen from './WatchlistDetailsScreen';
-
+//import DetailsScreen from './WatchlistDetailsScreen';
 const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+
+//for pressing item on the watchlist, which will trigger an alert
+//asking user to add item to portfolio or not
+const onPress = () => {
+  Alert.alert(
+    'ADD TO PROTFOLIO',
+    'Are you sure?', // <- this part is optional, you can pass an empty string
+    [
+      {
+        text: 'Yes', onPress: () => {
+          addToPortfolio(id) //add to firebase user's portfolio
+        }
+      }, // insert ADD TO PORTFOLIO function
+      { text: 'No', onPress: () => console.log('NO Pressed') },
+    ],
+    { cancelable: false },
+  );
+};
 
 const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
   const [exist, setExist] = useState(false); //already exist in porfolio or not
@@ -66,10 +83,10 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
         <View style={{ flex: 10, paddingRight: 15 }}>
           <AreaChart
             style={{ height: 40, width: 90 }}
-            data={[2, 4, 5, 6, 7, 8, 15, 7, 5, 4, 4, 5, 7, 6, 5, 4]}
-            // contentInset={{ top: 30, bottom: 30 }}
+            data={item.days30ClosePriceData.split(',').map(n => parseFloat(n * -1))}
+            contentInset={{ top: 30, bottom: 30 }}
             curve={shape.curveNatural}
-            svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
+            svg={{ fill: 'rgba(134, 65, 244, 0.8)'}}
           >
           </AreaChart>
         </View>
@@ -100,7 +117,8 @@ function Watchlist({ navigation }) {
                 watchlist.push({
                   id: childSnapshot.key,
                   sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
-                  sharesName: childSnapshot.val().sharesName
+                  sharesName: childSnapshot.val().sharesName,
+                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData
                 })
               }
             })
@@ -181,11 +199,6 @@ export default function WatchlistStackScreen() {
   return (
     <WatchlistStack.Navigator>
       <WatchlistStack.Screen name="Watchlist" component={Watchlist} />
-      <WatchlistStack.Screen
-        name="Details"
-        component={DetailsScreen}
-        options={({ route }) => ({ title: route.params.obj.fullname })}
-      />
     </WatchlistStack.Navigator>
   )
 }
