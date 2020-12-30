@@ -17,9 +17,13 @@ export default StyleSheet.create({
     backgroundColor: '#fff',
     alignSelf: 'center',
   },
-  detailsView: {
-    backgroundColor: '#fff',
-    margin: 10,
-    padding: 10,
+  view: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  newsStack: {
+    paddingTop: 25,
+    backgroundColor: '#ffffff',
+  }
 })

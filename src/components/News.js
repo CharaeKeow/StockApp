@@ -4,50 +4,45 @@ import { FlatList, TouchableOpacity, View, Text, Linking, Dimensions } from 'rea
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { VictoryPie } from "victory-native";
+
 import { firebase } from '../firebase/config';
 import styles from '../styles/News.style';
-
-const Tab = createMaterialTopTabNavigator();
 
 function array(param) {
   var values = new Array();
 
-    values[0] = 0.5 + (param/2);
-    values[1] = 0.5 - (param/2);
-  
+  values[0] = 0.5 + (param / 2);
+  values[1] = 0.5 - (param / 2);
+
   return values;
 }
 
 const Item = ({ item, style }) => {
   return (
-    <TouchableOpacity onPress={()=>{ Linking.openURL(item.url)}} style={[styles.item, style]}>
-        <View  style={{flexDirection: "column"}}>
-          <View style={{flex:1.5}}>
-            <Text style={{fontSize:16, fontWeight:'bold'}}>{item.title}</Text>
-            <Text style={{paddingTop:6}}>{item.date}</Text>
-            <Text>SA Score: {item.compound}</Text>
-          </View>
-          <View style={{justifyContent:'center', paddingLeft:Dimensions.get('window').width/3.5, paddingTop:10, flex:1}}>
-            <VictoryPie
-              height={200}
-              width={200}
-              padding={55}
-              innerRadius={20}
-              colorScale={["green","red" ]}
-              data={array(item.compound)}
-              labels={["Good", "Bad"]}
-            />
+    <TouchableOpacity onPress={() => { Linking.openURL(item.url) }} style={[styles.item, style]}>
+      <View style={{ flexDirection: "column" }}>
+        <View style={{ flex: 1.5 }}>
+          <Text style={{ fontSize: 16, fontWeight: 'bold' }}>{item.title}</Text>
+          <Text style={{ paddingTop: 6 }}>{item.date}</Text>
+          <Text>SA Score: {item.compound}</Text>
         </View>
+        <View style={{ justifyContent: 'center', paddingLeft: Dimensions.get('window').width / 3.5, paddingTop: 10, flex: 1 }}>
+          <VictoryPie
+            height={200}
+            width={200}
+            padding={55}
+            innerRadius={20}
+            colorScale={["green", "red"]}
+            data={array(item.compound)}
+            labels={["Good", "Bad"]}
+          />
         </View>
-
+      </View>
     </TouchableOpacity >
   );
 };
 
 function NewsGlobal({ navigation }) { //Global
-
-  const [selectedId, setSelectedId] = useState(null)
-  const [data, setData] = useState('');
   const [NewsArr, setNewsArr] = React.useState(null);
 
   useEffect(() => {
@@ -99,7 +94,7 @@ function NewsGlobal({ navigation }) { //Global
 
   return (
     <View style={styles.view}>
-      <View style={styles.stockView}>
+      <View>
         <FlatList
           //data={DATA}
           data={NewsArr}
@@ -109,7 +104,6 @@ function NewsGlobal({ navigation }) { //Global
         />
       </View>
     </View>
-
   );
 }
 
@@ -161,7 +155,7 @@ function NewsLocal({ navigation }) { //Local
 
   return (
     <View style={styles.view}>
-      <View style={styles.stockView}>
+      <View>
         <FlatList
           //data={DATA}
           data={NewsArr}
@@ -171,7 +165,6 @@ function NewsLocal({ navigation }) { //Local
         />
       </View>
     </View>
-
   );
 }
 
@@ -185,10 +178,7 @@ function Global() {
     <GlobalStack.Navigator screenOptions={{
       headerShown: false
     }}>
-      <GlobalStack.Screen name="Global" component={NewsGlobal} screenOptions={{
-        headerShown: false
-      }}
-      />
+      <GlobalStack.Screen name="Global" component={NewsGlobal} />
     </GlobalStack.Navigator>
   )
 }
@@ -208,9 +198,11 @@ function Local() {
   )
 }
 
+const Tab = createMaterialTopTabNavigator();
+
 export default function NewsStackScreen() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator title="News" style={styles.newsStack} screenOptions={{ headerShown: true }}>
       <Tab.Screen name="Global" component={Global}
       />
       <Tab.Screen name="Local" component={Local} />
