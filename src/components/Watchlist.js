@@ -78,7 +78,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
 };
 
 function Watchlist({ navigation }) {
-  const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
+  //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
   const [search, setSearch] = useState(""); //for searchbar state
   const [watchlistArr, setWatchlistArr] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
