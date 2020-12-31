@@ -3,7 +3,7 @@
 /* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import {  FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
+import { FlatList, TouchableOpacity, View, Text, Linking, Alert } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 import DialogInput from 'react-native-dialog-input';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -18,25 +18,32 @@ import { firebase } from '../firebase/config';
 import UserProfile from './UserProfile';
 import styles from '../styles/Portfolio.style';
 
-const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
+//const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 
 const Item = ({ item, style, id }) => {
   const [exist, setExist] = useState(true); //it exists in db (as it's already in portfolio), hence TRUE
   const [stockId, setStockId] = useState(null);
 
-  const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
   const userPortfolioListRemoveChildRef = (stockId) => firebase.database().ref('/users/' + uid + '/portfolio/' + stockId);
 
   useEffect(() => {
+    let uid;
+    const user = firebase.auth().currentUser; //get id of current user
+    if (user !== null) {
+      uid = user.uid;
+      console.log(uid);
+    }
+    const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+
     userPortfolioListRef.once('value', (snapshot) => {
-      console.log(snapshot);
+      //console.log(snapshot);
       snapshot.forEach((child) => {
         if (child.val() === id) {
           setStockId(child.key);
         }
       })
     })
-  }, []) //run once on each render
+  }) //run once on each render
 
   //long pressing will remove item from portfolio
   const handlerLongClick = () => {
@@ -82,19 +89,30 @@ const Item = ({ item, style, id }) => {
   );
 };
 
-function Portfolio({ navigation }) {
-
-  const [selectedId, setSelectedId] = useState(null)
+function Portfolio() {
+  //const [selectedId, setSelectedId] = useState(null)
   //const [stockId, setStockId] = React.useState([]);
   const [search, setSearch] = useState(''); //for searchbar state
   //For handling query to filter the stock listed in portfolio
   const [filteredData, setFilteredData] = useState([]);
   //array to keep list of portfolio fetch from Firebase
   const [portfolioArr, setPortfolioArr] = useState([]);
+  let newPortfolioRef;
 
   useEffect(() => {
     let isMounted = true;
-    firebase.database().ref('/users/' + 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2' + '/portfolio').on('value', (snapshot) => {
+    let uid;
+    const user = firebase.auth().currentUser; //get id of current user
+    if (user !== null) {
+      uid = user.uid;
+      console.log(uid);
+    }
+    const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/pjortfolio');
+
+    newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
+
+    //console.log(firebase.auth().currentUser)
+    userPortfolioListRef.on('value', (snapshot) => {
       if (isMounted) {
         let portfolio = [];
         if (snapshot !== undefined || null) { //because this node has child === null
@@ -112,9 +130,9 @@ function Portfolio({ navigation }) {
                   sharesName: childSnapshot.val().sharesName,
                   companyUrl: childSnapshot.val().companyurl,
                   Days30ClosePriceData: childSnapshot.val().Days30ClosePriceData
-                });
+                })
               }
-            });
+            })
           }))
         }
         if (portfolio !== null) { //ensure portfolio not null before set
@@ -163,10 +181,6 @@ function Portfolio({ navigation }) {
     setVisible(true);
   }
 
-
-  const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
-  const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
-  const newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
   const addToPortfolio = (receiveInput) => { newPortfolioRef.set(receiveInput) }
 
   return (
@@ -192,32 +206,31 @@ function Portfolio({ navigation }) {
           data={search === '' ? portfolioArr : filteredData}
           renderItem={renderItem}
           keyExtractor={item => item.id}
-          extraData={selectedId}
+        //extraData={selectedId}
         />
       </View>
-
       <TouchableOpacity style={{
-            borderWidth:6,
-            borderColor:'rgba(0,0,0,0.03)',
-            alignItems:'center',
-            justifyContent:'center',
-            position: 'absolute',                                          
-            bottom: 12,                                                    
-            right: 20,
-            backgroundColor:'#fff',
-            borderRadius:100,
-          }} 
-          onPress={() => { showDialog() }} >
+        borderWidth: 6,
+        borderColor: 'rgba(0,0,0,0.03)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        bottom: 12,
+        right: 20,
+        backgroundColor: '#fff',
+        borderRadius: 100,
+      }}
+        onPress={() => { showDialog() }} >
         <AntDesign name="pluscircle" size={58} color="#01a699" />
       </TouchableOpacity>
       <View>
-      <DialogInput 
-            isDialogVisible={visible}
-            title={"PORTFOLIO"}
-            message={"Add new shares"}
-            hintInput ={"Enter shares' code"}
-            submitInput={ (inputText) => {addToPortfolio(inputText)} }
-            closeDialog={() => {setVisible(false)}}>
+        <DialogInput
+          isDialogVisible={visible}
+          title={"PORTFOLIO"}
+          message={"Add new shares"}
+          hintInput={"Enter shares' code"}
+          submitInput={(inputText) => { addToPortfolio(inputText) }}
+          closeDialog={() => { setVisible(false) }}>
         </DialogInput>
       </View>
     </View>
@@ -239,7 +252,15 @@ export default function PortfolioStackScreen() {
                 <MenuTrigger children={<Entypo name="dots-three-vertical" size={24} color="black" />} />
                 <MenuOptions>
                   <MenuOption text="Refresh" />
-                  <MenuOption text="Setting" onSelect={() => navigation.navigate('UserProfile')} />
+                  <MenuOption text="Setting" onSelect={() => {//navigation.navigate('UserProfile')
+                    firebase.auth().signOut().then(function () {
+                      // Sign-out successful.
+                      //navigation.navigate('Root', { screen: 'Login' });
+                    }).catch(function (error) {
+                      console.log(error);
+                    })
+                  }}
+                  />
                 </MenuOptions>
               </Menu>
             </View>

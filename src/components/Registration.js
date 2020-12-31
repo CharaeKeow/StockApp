@@ -20,7 +20,7 @@ export default function Registration({ navigation }) {
   const onRegisterPress = () => {
     if (password !== confirmPassword) { //alert password doesn't match
       alert("Passwords do not match!");
-    } 
+    }
     else {
 
       firebase
@@ -37,7 +37,6 @@ export default function Registration({ navigation }) {
             console.log('Email sent');
             //console.log(user);
           });
-          
 
           console.log(res); //output user
           alert('Registration successful. Please verify your email to login');
@@ -62,9 +61,9 @@ export default function Registration({ navigation }) {
           console.log(error.toString(error))
         });
 
-        navigation.navigate('Login');
-      }
+      navigation.navigate('Login');
     }
+  }
 
   return (
     <View style={styles.container}>

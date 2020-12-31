@@ -20,10 +20,10 @@ export default function Login({ navigation }) {
         // Disable for now
         if (!res.user.emailVerified) {
           alert("Please verify your email first!");
-        } else {
+        }/* else {
           alert(`Hi ${res.user.displayName}. Welcome back 😄`);
-        }
-    }).catch((error) => alert(error));
+        }*/
+      }).catch((error) => console.log(error));
   }
 
 
