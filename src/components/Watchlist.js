@@ -16,21 +16,6 @@ const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfol
 
 //for pressing item on the watchlist, which will trigger an alert
 //asking user to add item to portfolio or not
-const onPress = () => {
-  Alert.alert(
-    'ADD TO PROTFOLIO',
-    'Are you sure?', // <- this part is optional, you can pass an empty string
-    [
-      {
-        text: 'Yes', onPress: () => {
-          addToPortfolio(id) //add to firebase user's portfolio
-        }
-      }, // insert ADD TO PORTFOLIO function
-      { text: 'No', onPress: () => console.log('NO Pressed') },
-    ],
-    { cancelable: false },
-  );
-};
 
 const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
   const [exist, setExist] = useState(false); //already exist in porfolio or not

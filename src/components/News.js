@@ -37,7 +37,7 @@ const Item = ({ item, style }) => {
               data={array(item.compound)}
               labels={["Good", "Bad"]}
             />
-        </View>
+          </View>
         </View>
 
     </TouchableOpacity >
