@@ -10,18 +10,21 @@ import * as shape from 'd3-shape';
 
 import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
+import { AuthUserContext } from '../firebase/context'; // to get user including id from context
 //import DetailsScreen from './WatchlistDetailsScreen';
 //const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 
-
 const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
+  const { user, setUser } = useContext(AuthUserContext); //for getting the login user data
+  const [newPortfolioRef, setNewPortfolioRef] = useState(null); //this will auto generate key based on timestamp. prevent duplicate
   const [exist, setExist] = useState(false); //already exist in porfolio or not
-  const [uid, setUid] = useState(null);
+  //const [uid, setUid] = useState(null);
 
   const addToPortfolio = (id) => {
+    console.log(id);
     newPortfolioRef.set(
       id
-    )
+    );
   }
 
   //for pressing item on the watchlist, which will trigger an alert
@@ -42,15 +45,12 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
     );
   };
 
-  let newPortfolioRef; //this will auto generate key based on timestamp. prevent duplicate
-
   //for checking if it's already added in portfolio
   React.useEffect(() => {
     const user = firebase.auth().currentUser; //get id of current user
     let uid;
     if (user !== null) {
       uid = user.uid;
-      console.log(uid);
     }
     const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
@@ -61,8 +61,8 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
         }
       })
     })
-    newPortfolioRef = userPortfolioListRef.push();
-  }, [])
+    setNewPortfolioRef(userPortfolioListRef.push()); //set the new portfolio ref
+  }, [newPortfolioRef === null])
 
   return (
     <TouchableOpacity onPress={handleClickItem} style={[styles.item, style]} >
