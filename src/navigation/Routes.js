@@ -10,29 +10,31 @@ export default function Routes() {
   const { user, setUser } = useContext(AuthUserContext);
 
   useEffect(() => {
-    let unsubscribeAuth;
+    let isMounted = true;
 
-    if (firebase.auth().currentUser !== null) {
-      if (firebase.auth().currentUser.emailVerified) {
-        unsubscribeAuth = firebase.auth().onAuthStateChanged(authUser => {
-          /*
-          if (user !== null) {
-            setUser(user.uid);
-            console.log(user.uid);
-          }
-          */
-          try {
-            authUser ? setUser(authUser) : setUser(null);
-            console.log(user);
-          } catch (error) {
-            console.log(error)
-          }
-        });
+    if (isMounted) {
+      if (firebase.auth().currentUser !== null) {
+        if (firebase.auth().currentUser.emailVerified) {
+          firebase.auth().onAuthStateChanged(authUser => {
+            /*
+            if (user !== null) {
+              setUser(user.uid);
+              console.log(user.uid);
+            }
+            */
+            try {
+              authUser ? setUser(authUser) : setUser(null);
+              console.log(user);
+            } catch (error) {
+              console.log(error)
+            }
+          });
+        }
       }
     }
 
-    return unsubscribeAuth;
-  }, []); //run only if user change or during initial load
+    return () => { isMounted = false };
+  }, [user]); //run only if user change or during initial load
 
   return (
     <NavigationContainer>
