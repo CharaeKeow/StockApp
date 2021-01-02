@@ -14,14 +14,43 @@ function array(param) {
         values[0] = param;
         values[1] = 1-param;
       }
-      else {
+      if(param < 0) {
         values[0] = 1-(param*-1);
         values[1] = param*-1;
+      }
+      if(param === 0) {
+        values[0] = 1;
       }
     
     return values;
 }
 
+
+function pieChartColours(param2) {
+
+  var values = new Array();
+  
+      if(param2 > 0) {
+        values[0] = 'green';
+        values[1] = '#D8D8D8';
+      }
+      if(param2 < 0) {
+        values[1] = 'red';
+        values[0] = '#D8D8D8';
+      }
+      if(param2 === 0) {
+        values[0] = 'orange';
+      }
+    
+    return values;
+}
+
+function scaleToPercent(receiveInput) {
+
+  if (receiveInput < 0 ) 
+      receiveInput = (receiveInput * -1);
+  return (receiveInput * 100).toFixed(2) + "%";
+}
 
 function Market({ navigation }) {
   const [urlLocal, setUrlLocal] = useState(null); //url of local wordcloud img
@@ -48,15 +77,6 @@ function Market({ navigation }) {
       setAverageSentimentLocal(snapshot.val());
     })
   }, []); //run once on component load
-
-
-
-  function scaleToPercent(receiveInput) {
-
-    if (receiveInput < 0 ) 
-        receiveInput = (receiveInput * -1);
-    return (receiveInput * 100).toFixed(2) + "%";
-  }
 
 
   const [visibleL, setVisibleL] = useState(false);
@@ -114,46 +134,45 @@ function Market({ navigation }) {
                 <Text style={{ marginTop:25, fontSize: 23, fontWeight:'bold', textAlign:'center'}}>AVERAGE{'\n'}SENTIMENT ANALYSIS</Text>
                 
                 <View style={{ marginTop:-2, justifyContent:'center', flexDirection:'row'}}>
-                    <View style={{ marginRight:-9, flexDirection:'column'}}>
-                        <View>
-                            <VictoryPie
-                                height={160}
-                                width={(Dimensions.get('window').width/2)-11}
-                                padding={40}
-                                innerRadius={20}
-                                colorScale={["green","#D8D8D8"]}
-                                data={array(averageSentimentLocal)}
-                                style={{ labels: { display: "none" }}}
-                            />
-                        </View>
-                        <View>
-                            <Text style={{textAlign:'center', marginTop:-30, color: averageSentimentLocal > 0 ? "green" : "red", fontSize:25, fontWeight:'900'}}>{ scaleToPercent(averageSentimentLocal) }</Text>
-                            <View style={{marginTop:0, justifyContent:'center', alignSelf:'center'}}>
-                                <AppButtonLocal title="LOCAL"/>
-                            </View>
-                            {/* <Text style={{textAlign:'center', fontSize:16, marginBottom:30, fontWeight:'bold'}}>LOCAL</Text> */}
-                        </View>
-                    </View>
-
-                    <View style={{ marginLeft:-9, flexDirection:'column' }}>
-                        <View>
-                            <VictoryPie
-                                height={160}
-                                width={(Dimensions.get('window').width/2)-11}
-                                padding={40}
-                                innerRadius={20}
-                                colorScale={["#D8D8D8","red" ]}
-                                data={array(averageSentimentGlobal)}
-                                style={{ labels: { display: "none" }}}
-                            />
-                        </View>
-                        <View>
-                            <Text style={{textAlign:'center', marginTop:-30,color: averageSentimentGlobal > 0 ? "green" : "red", fontSize:25, fontWeight:'900'}}>{ scaleToPercent(averageSentimentGlobal) }</Text>
-                            <View style={{marginTop:0, alignSelf:'center'}}>
-                                <AppButtonGlobal title="GLOBAL"/>
-                            </View>
-                        </View>
-                    </View>
+                  <View style={{ marginRight:-9, flexDirection:'column' }}>
+                          <View>
+                              <VictoryPie
+                                  height={160}
+                                  width={(Dimensions.get('window').width/2)-11}
+                                  padding={40}
+                                  innerRadius={20}
+                                  colorScale={pieChartColours(averageSentimentGlobal)}
+                                  data={array(averageSentimentGlobal)}
+                                  style={{ labels: { display: "none" }}}
+                              />
+                          </View>
+                          <View>
+                              <Text style={{textAlign:'center', marginTop:-30,color: averageSentimentGlobal > 0 ? "green" : "red", fontSize:25, fontWeight:'900'}}>{ scaleToPercent(averageSentimentGlobal) }</Text>
+                              <View style={{marginTop:0, alignSelf:'center'}}>
+                                  <AppButtonGlobal title="GLOBAL"/>
+                              </View>
+                          </View>
+                      </View>
+                      <View style={{ marginLeft:-9, flexDirection:'column'}}>
+                          <View>
+                              <VictoryPie
+                                  height={160}
+                                  width={(Dimensions.get('window').width/2)-11}
+                                  padding={40}
+                                  innerRadius={20}
+                                  colorScale={pieChartColours(averageSentimentLocal)}
+                                  data={array(averageSentimentLocal)}
+                                  style={{ labels: { display: "none" }}}
+                              />
+                          </View>
+                          <View>
+                              <Text style={{textAlign:'center', marginTop:-30, color: averageSentimentLocal > 0 ? "green" : "red", fontSize:25, fontWeight:'900'}}>{ scaleToPercent(averageSentimentLocal) }</Text>
+                              <View style={{marginTop:0, justifyContent:'center', alignSelf:'center'}}>
+                                  <AppButtonLocal title="LOCAL"/>
+                              </View>
+                              {/* <Text style={{textAlign:'center', fontSize:16, marginBottom:30, fontWeight:'bold'}}>LOCAL</Text> */}
+                          </View>
+                      </View>
                 </View>
 
                 <ImageView 

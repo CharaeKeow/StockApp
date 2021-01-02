@@ -12,34 +12,77 @@ const Tab = createMaterialTopTabNavigator();
 function array(param) {
   var values = new Array();
 
-    values[0] = 0.5 + (param/2);
-    values[1] = 0.5 - (param/2);
+    if(param > 0) {
+      values[0] = param;
+      values[1] = 1-param;
+    }
+    if(param < 0) {
+      values[0] = 1-(param*-1);
+      values[1] = param*-1;
+    }
+    if(param === 0) {
+      values[0] = 1;
+    }
   
   return values;
+}
+
+
+function pieChartColours(param2) {
+
+var values = new Array();
+
+    if(param2 > 0) {
+      values[0] = 'green';
+      values[1] = '#D8D8D8';
+    }
+    if(param2 < 0) {
+      values[1] = 'red';
+      values[0] = '#D8D8D8';
+    }
+    if(param2 === 0) {
+      values[0] = 'orange';
+    }
+  
+  return values;
+}
+
+function scaleToPercent(receiveInput) {
+
+if (receiveInput < 0 ) 
+    receiveInput = (receiveInput * -1);
+return (receiveInput * 100).toFixed(2) + "%";
 }
 
 const Item = ({ item, style }) => {
   return (
     <TouchableOpacity onPress={()=>{ Linking.openURL(item.url)}} style={[styles.item, style]}>
-        <View  style={{flexDirection: "column"}}>
-          <View style={{flex:1.5}}>
-            <Text style={{fontSize:16, fontWeight:'bold'}}>{item.title}</Text>
-            <Text style={{paddingTop:6}}>{item.date}</Text>
-            <Text>SA Score: {item.compound}</Text>
+        <Text style={{fontSize:16, fontWeight:'bold'}}>{item.title}</Text>
+        <View  style={{flexDirection: "row"}}>
+          <View style={{flex:1.2}}>
+            <Text style={{fontSize:15,paddingTop:3}}>{item.date}</Text>
+
+            <View style={{
+                shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, 
+                shadowOpacity: 0.1, shadowRadius: 5, elevation: 4, width:110,
+                marginTop:12, marginBottom:40, borderRadius:20, backgroundColor:'white', flex:1}}>
+
+                <Text style={{ fontWeight:'900', textAlign:'center', marginTop:20}}>SA Score:</Text>
+                <Text style={{  textAlign:'center', fontSize:25, marginTop:3, color: item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : (item.compound === 0 ? "orange" : "red")}}>{scaleToPercent(item.compound)}</Text>
+              </View>
           </View>
-          <View style={{justifyContent:'center', paddingLeft:Dimensions.get('window').width/3.5, paddingTop:10, flex:1}}>
+          <View style={{ marginTop:-30, flex:1.8}}>
             <VictoryPie
               height={200}
               width={200}
               padding={55}
               innerRadius={20}
-              colorScale={["green","red" ]}
+              colorScale={pieChartColours(item.compound)}
               data={array(item.compound)}
-              labels={["Good", "Bad"]}
+              style={{ labels: { display: "none" }}}
             />
           </View>
         </View>
-
     </TouchableOpacity >
   );
 };
