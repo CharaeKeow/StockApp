@@ -23,26 +23,30 @@ import styles from '../styles/Portfolio.style';
 const Item = ({ item, style, id }) => {
   const [exist, setExist] = useState(true); //it exists in db (as it's already in portfolio), hence TRUE
   const [stockId, setStockId] = useState(null);
+  const [uid, setUid] = useState(null);
 
   const userPortfolioListRemoveChildRef = (stockId) => firebase.database().ref('/users/' + uid + '/portfolio/' + stockId);
 
   useEffect(() => {
-    let uid;
-    const user = firebase.auth().currentUser; //get id of current user
-    if (user !== null) {
-      uid = user.uid;
-      console.log(uid);
-    }
-    const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+    let isMounted = true;
+    if (isMounted) {
+      const user = firebase.auth().currentUser; //get id of current user
+      if (user !== null) {
+        setUid(user.uid);
+        console.log(uid);
+      }
+      const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
-    userPortfolioListRef.once('value', (snapshot) => {
-      //console.log(snapshot);
-      snapshot.forEach((child) => {
-        if (child.val() === id) {
-          setStockId(child.key);
-        }
+      userPortfolioListRef.once('value', (snapshot) => {
+        //console.log(snapshot);
+        snapshot.forEach((child) => {
+          if (child.val() === id) {
+            setStockId(child.key);
+          }
+        })
       })
-    })
+    }
+    return () => { isMounted = false }
   }) //run once on each render
 
   //long pressing will remove item from portfolio
@@ -97,7 +101,7 @@ function Portfolio() {
   const [filteredData, setFilteredData] = useState([]);
   //array to keep list of portfolio fetch from Firebase
   const [portfolioArr, setPortfolioArr] = useState([]);
-  let newPortfolioRef;
+  const [newPortfolioRef, setNewPortfolioRef] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -107,9 +111,9 @@ function Portfolio() {
       uid = user.uid;
       console.log(uid);
     }
-    const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/pjortfolio');
+    const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
-    newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
+    setNewPortfolioRef(userPortfolioListRef.push()); //this will auto generate key based on timestamp. prevent duplicate
 
     //console.log(firebase.auth().currentUser)
     userPortfolioListRef.on('value', (snapshot) => {
