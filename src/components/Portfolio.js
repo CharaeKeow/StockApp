@@ -255,8 +255,7 @@ export default function PortfolioStackScreen() {
               <Menu name="menu-1">
                 <MenuTrigger children={<Entypo name="dots-three-vertical" size={24} color="black" />} />
                 <MenuOptions>
-                  <MenuOption text="Refresh" />
-                  <MenuOption text="Setting" onSelect={() => {//navigation.navigate('UserProfile')
+                  <MenuOption text="Logout" onSelect={() => {//navigation.navigate('UserProfile')
                     firebase.auth().signOut().then(function () {
                       // Sign-out successful.
                       //navigation.navigate('Root', { screen: 'Login' });
