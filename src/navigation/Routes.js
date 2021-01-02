@@ -13,28 +13,32 @@ export default function Routes() {
     let isMounted = true;
 
     if (isMounted) {
-      if (firebase.auth().currentUser !== null) {
-        if (firebase.auth().currentUser.emailVerified) {
-          firebase.auth().onAuthStateChanged(authUser => {
-            /*
-            if (user !== null) {
-              setUser(user.uid);
-              console.log(user.uid);
-            }
-            */
-            try {
-              authUser ? setUser(authUser) : setUser(null);
-              console.log(user);
-            } catch (error) {
-              console.log(error)
-            }
-          });
+
+
+      firebase.auth().onAuthStateChanged(user => {
+        if (user !== null) {
+          if (user.emailVerified) {
+            firebase.auth().onAuthStateChanged(authUser => {
+              /*
+              if (user !== null) {
+                setUser(user.uid);
+                console.log(user.uid);
+              }
+              */
+              try {
+                authUser ? setUser(authUser) : setUser(null);
+                console.log(user);
+              } catch (error) {
+                console.log(error)
+              }
+            });
+          }
         }
-      }
+      })
     }
 
     return () => { isMounted = false };
-  }, [user]); //run only if user change or during initial load
+  }); //run only if user change or during initial load
 
   return (
     <NavigationContainer>
