@@ -68,7 +68,7 @@ const Item = ({ item, style }) => {
                 marginTop:12, marginBottom:40, borderRadius:20, backgroundColor:'white', flex:1}}>
 
                 <Text style={{ fontWeight:'900', textAlign:'center', marginTop:20}}>SA Score:</Text>
-                <Text style={{  textAlign:'center', fontSize:25, marginTop:3, color: item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : (item.compound === 0 ? "orange" : "red")}}>{scaleToPercent(item.compound)}</Text>
+                <Text style={{  textAlign:'center', fontSize:25, marginTop:3, color: item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"}}>{scaleToPercent(item.compound)}</Text>
               </View>
           </View>
           <View style={{ marginTop:-30, flex:1.8}}>
@@ -245,7 +245,7 @@ function Local() {
     <LocalStack.Navigator screenOptions={{
       headerShown: false
     }}>
-      <LocalStack.Screen name="Local" component={NewsLocal}
+      <LocalStack.Screen name="Malaysia" component={NewsLocal}
       />
     </LocalStack.Navigator>
   )
@@ -256,7 +256,7 @@ export default function NewsStackScreen() {
     <Tab.Navigator>
       <Tab.Screen name="Global" component={Global}
       />
-      <Tab.Screen name="Local" component={Local} />
+      <Tab.Screen name="Malaysia" component={Local} />
     </Tab.Navigator>
   );
 }
