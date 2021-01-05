@@ -14,7 +14,6 @@ export default function Routes() {
 
     if (isMounted) {
 
-
       firebase.auth().onAuthStateChanged(user => {
         if (user !== null) {
           if (user.emailVerified) {
@@ -27,12 +26,16 @@ export default function Routes() {
               */
               try {
                 authUser ? setUser(authUser) : setUser(null);
-                console.log(user);
+                //console.log(user);
               } catch (error) {
                 console.log(error)
               }
             });
+          } else {
+            setUser(null);
           }
+        } else {
+          setUser(null);
         }
       })
     }

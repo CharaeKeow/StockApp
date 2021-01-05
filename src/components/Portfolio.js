@@ -33,7 +33,7 @@ const Item = ({ item, style, id }) => {
       const user = firebase.auth().currentUser; //get id of current user
       if (user !== null) {
         setUid(user.uid);
-        console.log(uid);
+        //console.log(uid);
       }
       const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
@@ -100,29 +100,33 @@ function Portfolio() {
   //For handling query to filter the stock listed in portfolio
   const [filteredData, setFilteredData] = useState([]);
   //array to keep list of portfolio fetch from Firebase
-  const [portfolioArr, setPortfolioArr] = useState([]);
+  const [portfolioArr, setPortfolioArr] = useState(0);
   const [newPortfolioRef, setNewPortfolioRef] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
     let uid;
+
     const user = firebase.auth().currentUser; //get id of current user
+    console.log("Portfolio: " + user.uid);
     if (user !== null) {
       uid = user.uid;
-      console.log(uid);
+      //console.log(uid);
     }
     const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
+    //console.log(user);
     setNewPortfolioRef(userPortfolioListRef.push()); //this will auto generate key based on timestamp. prevent duplicate
 
     //console.log(firebase.auth().currentUser)
     userPortfolioListRef.on('value', (snapshot) => {
       if (isMounted) {
         let portfolio = [];
-        if (snapshot !== undefined || null) { //because this node has child === null
-          snapshot.forEach((child => {
-            firebase.database().ref('/processedData/' + child.val()).on('value', (childSnapshot) => {
-              if (childSnapshot.val() !== null) {
+        if (snapshot !== undefined && snapshot !== null) { //because this node has child === null
+          snapshot.forEach((child) => {
+            firebase.database().ref('/processedData/' + child.val()).once('value', (childSnapshot) => {
+              console.log('test')
+              if (childSnapshot.val() !== null && childSnapshot !== undefined) {
                 portfolio.push({
                   id: childSnapshot.key,
                   bbStatus: childSnapshot.val().bbStatus,
@@ -136,16 +140,18 @@ function Portfolio() {
                   Days30ClosePriceData: childSnapshot.val().Days30ClosePriceData
                 })
               }
+            }).then(() => {
+              if (portfolio !== null && portfolio !== undefined) { //ensure portfolio not null before set
+                setPortfolioArr(portfolio);
+                console.log(portfolioArr);
+              }
             })
-          }))
-        }
-        if (portfolio !== null) { //ensure portfolio not null before set
-          setPortfolioArr(portfolio);
+          })
         }
       }
     })
     return () => { isMounted = false };
-  }, [portfolioArr === null]); //run useEffect as long as portfolioArr is null
+  }, []); //run useEffect as long as portfolioArr is null
 
   /*Handling search @TODO: Refactor this into a separate file to cleanup
   as this is used across Watchlist and Portfolio :)
