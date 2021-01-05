@@ -61,7 +61,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
       <View style={styles.container}>
         <View style={{ justifyContent:'center', flex: 15 }}>
           <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingRight: 15 }} >{item.sharesName}</Text>
-          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15 }} >Risk: {item.sharesName}</Text>
+          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15, color: item.riskStatus >= 0 ? (item.riskStatus === 0 ? "orange" : "green") : "red" }} >Risk: {item.riskStatus}</Text>
         </View>
         <View style={{ flex: 10 }}>
           <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice}</Text>
@@ -104,7 +104,9 @@ function Watchlist({ navigation }) {
                   id: childSnapshot.key,
                   sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
                   sharesName: childSnapshot.val().sharesName,
-                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData
+                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData,
+                  riskStatus: childSnapshot.val().riskStatus,
+                  confidenceLevel: childSnapshot.val().confidenceLevel
                 })
               }
             })

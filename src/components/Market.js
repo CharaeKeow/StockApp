@@ -52,7 +52,7 @@ function scaleToPercent(receiveInput) {
   return (receiveInput * 100).toFixed(2) + "%";
 }
 
-function Market({ navigation }) {
+function Market() {
   const [urlLocal, setUrlLocal] = useState(null); //url of local wordcloud img
   const [urlGlobal, setUrlGlobal] = useState(null); //url of global wordcloud img
   const [averageSentimentLocal, setAverageSentimentLocal] = useState(null);
@@ -62,6 +62,38 @@ function Market({ navigation }) {
   const urlGlobalRef = firebase.database().ref('/news/global/sentiment/urlglobal');
   const averageLocalRef = firebase.database().ref('/news/local/sentiment/Average');
   const averageGlobalRef = firebase.database().ref('/news/global/sentiment/Average');
+
+  const [gainers, setGainers] = useState(null);
+  const [losers, setLosers] = useState(null);
+  const [unchanged, setUnchanged] = useState(null);
+  const [volume, setVolume] = useState(null);
+
+  const gainersRef = firebase.database().ref('/market/summary/local/gainers');
+  const losersRef = firebase.database().ref('/market/summary/local/losers');
+  const unchangedRef = firebase.database().ref('/market/summary/local/unchanged');
+  const volumeRef = firebase.database().ref('/market/summary/local/volume');
+
+  const [bco, setBco] = useState(null);
+  const [wco, setWco] = useState(null);
+  const [dj, setDj] = useState(null);
+  const [djf, setDjf] = useState(null);
+  const [gold, setGold] = useState(null);
+  const [nadq, setNadq] = useState(null);
+  const [nadqf, setNadqf] = useState(null);
+  const [sp500, setSp500] = useState(null);
+  const [sp500Vix, setSp500Vix] = useState(null);
+  const [sp500f, setSp500f] = useState(null);
+
+  const bcoRef = firebase.database().ref('/market/summary/global/BRENT CRUDE OIL');
+  const wcoRef = firebase.database().ref('/market/summary/global/CRUDE OIL');
+  const djRef = firebase.database().ref('/market/summary/global/"DOW JONES "');
+  const djfRef = firebase.database().ref('/market/summary/global/DOW JONES FUTURES');
+  const goldRef = firebase.database().ref('/market/summary/global/GOLD');
+  const nadqRef = firebase.database().ref('/market/summary/global/"NASDAQ "');
+  const nadqfRef = firebase.database().ref('/market/summary/global/NASDAQ FUTURES');
+  const sp500Ref = firebase.database().ref('/market/summary/global/"S&P 500 "');
+  const sp500VixRef = firebase.database().ref('/market/summary/global/S&P 500 VIX');
+  const sp500fRef = firebase.database().ref('/market/summary/global/S&P FUTURES');
 
   useEffect(() => {
     urlLocalRef.on('value', (snapshot) => {
@@ -76,8 +108,58 @@ function Market({ navigation }) {
     averageLocalRef.on('value', (snapshot) => {
       setAverageSentimentLocal(snapshot.val());
     })
+
+
+    gainersRef.on('value', (snapshot) => {
+      setGainers(snapshot.val());
+    })
+    losersRef.on('value', (snapshot) => {
+      setLosers(snapshot.val());
+    })
+    unchangedRef.on('value', (snapshot) => {
+      setUnchanged(snapshot.val());
+    })
+    volumeRef.on('value', (snapshot) => {
+      setVolume(snapshot.val());
+    })
+
+
+    bcoRef.on('value', (snapshot) => {
+      setBco(snapshot.val());
+    });
+    wcoRef.on('value', (snapshot) => {
+      setWco(snapshot.val());
+    });
+    djRef.on('value', (snapshot) => {
+      setDj(snapshot.val());
+    });
+    djfRef.on('value', (snapshot) => {
+      setDjf(snapshot.val());
+    })
+    goldRef.on('value', (snapshot) => {
+      setGold(snapshot.val());
+    });
+    nadqRef.on('value', (snapshot) => {
+      setNadq(snapshot.val());
+    });
+    nadqfRef.on('value', (snapshot) => {
+      setNadqf(snapshot.val());
+    });
+    sp500Ref.on('value', (snapshot) => {
+      setSp500(snapshot.val());
+    })
+    sp500VixRef.on('value', (snapshot) => {
+      setSp500Vix(snapshot.val());
+    })
+    sp500fRef.on('value', (snapshot) => {
+      setSp500f(snapshot.val());
+    })
   }, []); //run once on component load
 
+
+
+
+  
 
   const [visibleL, setVisibleL] = useState(false);
   const [visibleG, setVisibleG] = useState(false);
@@ -199,33 +281,34 @@ function Market({ navigation }) {
                   <Text style={{ marginTop:35, fontSize: 25, fontWeight:'bold', textAlign:'center'}}>MARKET OVERVIEW</Text>
 
                   <View style={{marginTop:25,marginLeft:20, marginRight:20, marginBottom:20}}>
-                    <Text style={{ textAlign:'center', marginBottom:15,fontWeight:'bold', fontSize:20}}>MALAYSIA</Text>
+                    <Text style={{ textAlign:'center', marginBottom:15,fontWeight:'bold', fontSize:20}}>Malaysia's Market Action</Text>
                     <View style={{ marginLeft:15, flexDirection:'row'}}>
                       <VictoryPie
                         height={120}
                         width={120}
                         padding={10}
                         innerRadius={25}
-                        colorScale={pieChartColours(averageSentimentLocal)}
-                        data={array(averageSentimentLocal)}
+                        colorScale={['green','red','orange']}
+                        data={[gainers, losers, unchanged]}
                         style={{ labels: { display: "none" }}}
                       />
                       <View style={{marginTop:25,flexDirection:'column'}}>
                         <Text style={{color:'green',fontWeight:'bold', marginLeft:20}}>
-                          Gainers         :
+                          Gainers         : {gainers}
                         </Text>
                         <Text style={{color:'red',fontWeight:'bold', marginLeft:20}}>
-                          Losers           :
+                          Losers           : {losers}
                         </Text>
                         <Text style={{color:'orange',fontWeight:'bold', marginLeft:20}}>
-                          Unchanged  :
+                          Unchanged  : {unchanged}
                         </Text>
                       </View>
                     </View>
+                    <Text style={{ textAlign:'center', marginTop:12, marginBottom:15,fontWeight:'900', fontSize:18}}>Volume: {volume}</Text>
                   </View>
 
                     
-                    {/* <Text style={{ textAlign:'center', marginTop:15, fontWeight:'bold', fontSize:20}}>Malaysia's Sectors</Text> */}
+                    <Text style={{ textAlign:'center', marginTop:15, fontWeight:'bold', fontSize:20}}>Malaysia's Sectors</Text>
                     <View style={{alignItems:'center'}}>
                       <View style={{flexDirection:'row'}}>
                           <Text style={{marginTop:18, marginBottom:-25}}>
@@ -249,36 +332,30 @@ function Market({ navigation }) {
                             IP     :    Industrial Products & Services
                           </Text>
                       <VictoryChart>
-                        <VictoryBar
+                        <VictoryBar horizontal
                           style={{data: { fill: 'rgba(134, 65, 244, 0.8)'}/*({data}) => data >= 0 ? 'green' : 'red'}*/}}
-                          data={[0,2,5,6,3,4,-7,2,5,4,7,6,8,6]}
+                          data={[0,2,5,6,3,4,7,2,5,4,7,6,8,6]}
                           /*labels={[,2,5,6,3,4,-7,2,5,4,7,6,8,6]}*//>
                         <VictoryAxis
-                          style={{ tickLabels: {fontSize: 11}}}
+                          style={{ tickLabels: {fontWeight:'bold',fontSize: 11}}}
                           crossAxis={false}
                           tickValues={['CT','CS','ER','FS','HC','IP','PT','PP','RE','TN','TM','TL','UL']}/>
                       </VictoryChart>
                     </View>
 
-                    <Text style={{ textAlign:'center', marginBottom:25, fontWeight:'bold', fontSize:20}}>GLOBAL</Text>
-
-                    <View style={{marginBottom:50,justifyContent:'center', flexDirection:'row'}}>
-                      <View>
-                          <Text style={{ textAlign:'right', marginBottom:5, fontSize:17}}>DOW JONES</Text>
-                          <Text style={{ textAlign:'right', marginBottom:5, fontSize:17}}>S&P 500</Text>
-                          <Text style={{ textAlign:'right',marginBottom:5, fontSize:17}}>NASDAQ</Text>
-                          <Text style={{ textAlign:'right',marginBottom:5, fontSize:17}}>S&P 500 VIX</Text>
-                          <Text style={{ textAlign:'right',marginBottom:5, fontSize:17}}>Crude Oil WTI</Text>
-                          <Text style={{ textAlign:'right',marginBottom:5, fontSize:17}}>Brent Oil </Text>
-                      </View>
-                      <View>
-                          <Text style={{marginLeft:15,marginBottom:5,fontSize:17/*color:item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"*/}}>GLOBAL</Text>
-                          <Text style={{marginLeft:15,marginBottom:5,fontSize:17/*color:item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"*/}}>GLOBAL</Text>
-                          <Text style={{marginLeft:15,marginBottom:5,fontSize:17/*color:item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"*/}}>GLOBAL</Text>
-                          <Text style={{marginLeft:15,marginBottom:5,fontSize:17/*color:item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"*/}}>GLOBAL</Text>
-                          <Text style={{marginLeft:15,marginBottom:5,fontSize:17/*color:item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"*/}}>GLOBAL</Text>
-                          <Text style={{marginLeft:15,marginBottom:5,fontSize:17/*color:item.compound >= 0 ? (item.compound === 0 ? "orange" : "green") : "red"*/}}>GLOBAL</Text>
-                      </View>
+                    <Text style={{ textAlign:'center', fontWeight:'bold', fontSize:20}}>Global's Market Action</Text>
+                    <View style={{marginBottom:30, justifyContent:'center', flexDirection:'row'}}>
+                      <VictoryChart>
+                        <VictoryBar horizontal
+                          width={100}
+                          style={{data: { fill: 'rgba(134, 65, 244, 0.8)'}/*({data}) => data >= 0 ? 'green' : 'red'}*/}}
+                          data={[0,dj,sp500,nadq,gold,wco,bco,sp500Vix,nadqf,sp500f,djf]}
+                          /*labels={[,2,5,6,3,4,-7,2,5,4,7,6,8,6]}*//>
+                        <VictoryAxis
+                          style={{ tickLabels: {fontWeight:'bold', fontSize: 11}}}
+                          crossAxis={false}
+                          tickValues={['DOW JONES','S&P 500','NASDAQ','GOLD','WTI CRUDE OIL','BRENT CRUDE OIL','S&P 500 VIX','NASDAQ FUTURES','S&P 500 FUTURES','DOW JONES FUTURES']}/>
+                      </VictoryChart>
                     </View>
                 </View>
         </View>
