@@ -25,7 +25,7 @@ export default StyleSheet.create({
   },
   view: {
     flex: 1,
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     alignItems: 'center',
   },
   stockView: {

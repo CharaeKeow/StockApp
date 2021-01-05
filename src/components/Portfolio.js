@@ -61,11 +61,11 @@ const Item = ({ item, style, id }) => {
       <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: "bold", paddingRight: 15 }}>{item.sharesName}<Text style={{ fontSize: 18, fontWeight: "bold", paddingLeft: 6, color: 'green' }}>   RM {item.sharesCurrPrice}</Text></Text>
       <View style={{ flexDirection: "row" }}>
         <View style={{ paddingTop: 20, paddingLeft: 12, backgroundColor: '#fff', flex: 1.5 }}>
-          <Text>EMA 50   : <Text>{item.ema50}</Text></Text>
-          <Text>EMA 100 : <Text>{item.ema100}</Text></Text>
-          <Text>EMA 200 : <Text>{item.ema200}</Text></Text>
-          <Text>SA Score : <Text>{item.sentiValue}</Text></Text>
-          <Text>BB Status: <Text>{item.bbStatus}</Text></Text>
+          <Text>EMA 50     : <Text> RM {item.ema50}</Text></Text>
+          <Text>EMA 100  : <Text> RM {item.ema100}</Text></Text>
+          <Text>EMA 200  : <Text> RM {item.ema200}</Text></Text>
+          <Text>SA Score  : <Text> {item.sentiValue*100}%</Text></Text>
+          <Text>BB Status : <Text> {item.bbStatus}</Text></Text>
         </View>
         <View style={{ paddingRight: 12, flex: 1 }}>
           <AreaChart

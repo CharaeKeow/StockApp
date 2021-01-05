@@ -59,8 +59,9 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
   return (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]} >
       <View style={styles.container}>
-        <View style={{ flex: 15 }}>
-          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingTop: 11, paddingRight: 15 }} >{item.sharesName}</Text>
+        <View style={{ justifyContent:'center', flex: 15 }}>
+          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingRight: 15 }} >{item.sharesName}</Text>
+          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15 }} >Risk: {item.sharesName}</Text>
         </View>
         <View style={{ flex: 10 }}>
           <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice}</Text>
