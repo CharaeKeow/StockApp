@@ -8,6 +8,7 @@ import ImageView from 'react-native-image-view';
 import { firebase } from '../firebase/config';
 import styles from '../styles/Market.style';
 import MarketOverviewMalaysia from './MarketOverviewMalaysia';
+import MarketOverviewGlobal from './MarketOverviewGlobal';
 
 function array(param) {
   var values = new Array();
@@ -75,28 +76,6 @@ function Market() {
   const unchangedRef = firebase.database().ref('/market/summary/local/unchanged');
   const volumeRef = firebase.database().ref('/market/summary/local/volume');
 
-  const [bco, setBco] = useState(null);
-  const [wco, setWco] = useState(null);
-  const [dj, setDj] = useState(null);
-  const [djf, setDjf] = useState(null);
-  const [gold, setGold] = useState(null);
-  const [nadq, setNadq] = useState(null);
-  const [nadqf, setNadqf] = useState(null);
-  const [sp500, setSp500] = useState(null);
-  const [sp500Vix, setSp500Vix] = useState(null);
-  const [sp500f, setSp500f] = useState(null);
-
-  const bcoRef = firebase.database().ref('/market/summary/global/BRENT CRUDE OIL');
-  const wcoRef = firebase.database().ref('/market/summary/global/CRUDE OIL');
-  const djRef = firebase.database().ref('/market/summary/global/"DOW JONES "');
-  const djfRef = firebase.database().ref('/market/summary/global/DOW JONES FUTURES');
-  const goldRef = firebase.database().ref('/market/summary/global/GOLD');
-  const nadqRef = firebase.database().ref('/market/summary/global/"NASDAQ "');
-  const nadqfRef = firebase.database().ref('/market/summary/global/NASDAQ FUTURES');
-  const sp500Ref = firebase.database().ref('/market/summary/global/"S&P 500 "');
-  const sp500VixRef = firebase.database().ref('/market/summary/global/S&P 500 VIX');
-  const sp500fRef = firebase.database().ref('/market/summary/global/S&P FUTURES');
-
   useEffect(() => {
     urlLocalRef.on('value', (snapshot) => {
       setUrlLocal(snapshot.val());
@@ -123,38 +102,6 @@ function Market() {
     })
     volumeRef.on('value', (snapshot) => {
       setVolume(snapshot.val());
-    })
-
-
-    bcoRef.on('value', (snapshot) => {
-      setBco(snapshot.val());
-    });
-    wcoRef.on('value', (snapshot) => {
-      setWco(snapshot.val());
-    });
-    djRef.on('value', (snapshot) => {
-      setDj(snapshot.val());
-    });
-    djfRef.on('value', (snapshot) => {
-      setDjf(snapshot.val());
-    })
-    goldRef.on('value', (snapshot) => {
-      setGold(snapshot.val());
-    });
-    nadqRef.on('value', (snapshot) => {
-      setNadq(snapshot.val());
-    });
-    nadqfRef.on('value', (snapshot) => {
-      setNadqf(snapshot.val());
-    });
-    sp500Ref.on('value', (snapshot) => {
-      setSp500(snapshot.val());
-    })
-    sp500VixRef.on('value', (snapshot) => {
-      setSp500Vix(snapshot.val());
-    })
-    sp500fRef.on('value', (snapshot) => {
-      setSp500f(snapshot.val());
     })
   }, []); //run once on component load
 
@@ -316,37 +263,7 @@ function Market() {
           <MarketOverviewMalaysia />
 
           {/*Global market activity section*/}
-          <Text style={{ marginTop: 30, textAlign: 'center', fontWeight: 'bold', fontSize: 20 }}>Global's Market Action</Text>
-          <View style={{ marginBottom: 20, alignItems: 'center' }}>
-            <Text style={{ marginTop: 18, marginBottom: -5 }}>
-              GD       :    Gold{'\n'}
-                              WCO   :    WTI Crude Oil{'\n'}
-                              BCO    :    Brent Crude Oil{'\n'}
-                              SPV     :    S&P 500 Vix
-                      </Text>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={{ marginTop: 18, marginBottom: -25 }}>
-                DJ   :   Dow Jones{'\n'}
-                            NS  :   Nasdaq{'\n'}
-                            SP  :   S&P 500{'\n'}
-              </Text>
-              <Text style={{ marginLeft: 12, marginTop: 18, marginBottom: -25 }}>
-                DJF  :   Dow Jones Futures{'\n'}
-                            NSF  :   Nasdaq Futures{'\n'}
-                            SPF  :   S&P 500 Futures{'\n'}
-              </Text>
-            </View>
-            <VictoryChart>
-              <VictoryBar
-                // horizontal
-                style={{ data: { fill: 'rgba(134, 65, 244, 0.8)' }/*({data}) => data >= 0 ? 'green' : 'red'}*/ }}
-                data={[0, dj, sp500, nadq, gold, wco, bco, sp500Vix, nadqf, sp500f, djf]}
-                          /*labels={[,2,5,6,3,4,-7,2,5,4,7,6,8,6]}*/ />
-              <VictoryAxis
-                style={{ tickLabels: { fontWeight: 'bold', fontSize: 11, angle: 90 } }}
-                tickValues={['DJ', 'SP', 'NS', 'GD', 'WCO', 'BCO', 'SPV', 'NSF', 'SPF', 'DJF']} />
-            </VictoryChart>
-          </View>
+          <MarketOverviewGlobal />
         </View>
       </View>
     </ScrollView>
