@@ -21,7 +21,9 @@ export default function Login({ navigation }) {
         if (!res.user.emailVerified) {
           alert("Please verify your email first!");
         } else {
+          console.log('test first login');
           alert(`Hi ${res.user.displayName}. Welcome back 😄`);
+          firebase.auth().currentUser.reload();
         }
       }).catch((error) => console.log(error));
   }

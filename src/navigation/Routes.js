@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { firebase } from '../firebase/config';
@@ -16,35 +16,36 @@ export default function Routes() {
 
       firebase.auth().onAuthStateChanged(user => {
         if (user !== null) {
-          if (user.emailVerified) {
-            firebase.auth().onAuthStateChanged(authUser => {
-              /*
-              if (user !== null) {
-                setUser(user.uid);
-                console.log(user.uid);
-              }
-              */
-              try {
-                authUser ? setUser(authUser) : setUser(null);
-                //console.log(user);
-              } catch (error) {
-                console.log(error)
-              }
-            });
-          } else {
-            setUser(null);
+          console.log('Email verified? ' + user.emailVerified)
+          if (user.emailVerified) {            //firebase.auth().onAuthStateChanged(authUser => {
+            let authUser = firebase.auth().currentUser;
+            /*
+            if (user !== null) {
+              setUser(user.uid);
+              console.log(user.uid);
+            }
+            */
+            console.log('Auth user ' + authUser);
+            try {
+              authUser ? setUser(authUser) : setUser(null);
+              console.log(user);
+            } catch (error) {
+              console.log(error)
+            }
           }
         } else {
+          console.log('user null?')
           setUser(null);
         }
-      })
+      }
+      )
     }
-
     return () => { isMounted = false };
   }); //run only if user change or during initial load
 
   return (
     <NavigationContainer>
+      {console.log(user)}
       {user ? <BottomTab /> : <AuthStack />}
     </NavigationContainer>
   )
