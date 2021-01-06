@@ -332,29 +332,48 @@ function Market() {
                             IP     :    Industrial Products & Services
                           </Text>
                       <VictoryChart>
-                        <VictoryBar horizontal
+                        <VictoryBar
+                        // horizontal
                           style={{data: { fill: 'rgba(134, 65, 244, 0.8)'}/*({data}) => data >= 0 ? 'green' : 'red'}*/}}
                           data={[0,2,5,6,3,4,7,2,5,4,7,6,8,6]}
                           /*labels={[,2,5,6,3,4,-7,2,5,4,7,6,8,6]}*//>
                         <VictoryAxis
-                          style={{ tickLabels: {fontWeight:'bold',fontSize: 11}}}
+                        offsetX={190}
+                          style={{ tickLabels: {fontWeight:'bold',fontSize: 11, angle:90}}}
                           crossAxis={false}
                           tickValues={['CT','CS','ER','FS','HC','IP','PT','PP','RE','TN','TM','TL','UL']}/>
                       </VictoryChart>
                     </View>
 
-                    <Text style={{ textAlign:'center', fontWeight:'bold', fontSize:20}}>Global's Market Action</Text>
-                    <View style={{marginBottom:30, justifyContent:'center', flexDirection:'row'}}>
+                    <Text style={{marginTop:30, textAlign:'center', fontWeight:'bold', fontSize:20}}>Global's Market Action</Text>
+                    <View style={{ marginBottom:20, alignItems:'center'}}>
+                      <Text style={{marginTop:18, marginBottom:-5}}>
+                              GD       :    Gold{'\n'}
+                              WCO   :    WTI Crude Oil{'\n'}
+                              BCO    :    Brent Crude Oil{'\n'}
+                              SPV     :    S&P 500 Vix
+                      </Text>
+                      <View style={{flexDirection:'row'}}>
+                          <Text style={{marginTop:18, marginBottom:-25}}>
+                            DJ   :   Dow Jones{'\n'}
+                            NS  :   Nasdaq{'\n'}
+                            SP  :   S&P 500{'\n'}
+                          </Text>
+                          <Text style={{marginLeft:12,marginTop:18, marginBottom:-25}}>
+                            DJF  :   Dow Jones Futures{'\n'}
+                            NSF  :   Nasdaq Futures{'\n'}
+                            SPF  :   S&P 500 Futures{'\n'}
+                          </Text>
+                        </View>
                       <VictoryChart>
-                        <VictoryBar horizontal
-                          width={100}
+                        <VictoryBar
+                          // horizontal
                           style={{data: { fill: 'rgba(134, 65, 244, 0.8)'}/*({data}) => data >= 0 ? 'green' : 'red'}*/}}
                           data={[0,dj,sp500,nadq,gold,wco,bco,sp500Vix,nadqf,sp500f,djf]}
                           /*labels={[,2,5,6,3,4,-7,2,5,4,7,6,8,6]}*//>
                         <VictoryAxis
-                          style={{ tickLabels: {fontWeight:'bold', fontSize: 11}}}
-                          crossAxis={false}
-                          tickValues={['DOW JONES','S&P 500','NASDAQ','GOLD','WTI CRUDE OIL','BRENT CRUDE OIL','S&P 500 VIX','NASDAQ FUTURES','S&P 500 FUTURES','DOW JONES FUTURES']}/>
+                          style={{ tickLabels: {fontWeight:'bold', fontSize: 11, angle:90}}}
+                          tickValues={['DJ','SP','NS','GD','WCO','BCO','SPV','NSF','SPF','DJF']}/>
                       </VictoryChart>
                     </View>
                 </View>
