@@ -12,7 +12,12 @@ import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
 import { AuthUserContext } from '../firebase/context'; // to get user including id from context
 //import DetailsScreen from './WatchlistDetailsScreen';
-//const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
+
+const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
+const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+
+//for pressing item on the watchlist, which will trigger an alert
+//asking user to add item to portfolio or not
 
 const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
   const { user, setUser } = useContext(AuthUserContext); //for getting the login user data
@@ -67,8 +72,9 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
   return (
     <TouchableOpacity onPress={handleClickItem} style={[styles.item, style]} >
       <View style={styles.container}>
-        <View style={{ flex: 15 }}>
-          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingTop: 11, paddingRight: 15 }} >{item.sharesName}</Text>
+        <View style={{ justifyContent: 'center', flex: 15 }}>
+          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingRight: 15 }} >{item.sharesName}</Text>
+          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15, color: item.riskStatus >= 0 ? (item.riskStatus === 0 ? "orange" : "green") : "red" }} >Risk: {item.riskStatus}</Text>
         </View>
         <View style={{ flex: 10 }}>
           <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice}</Text>
@@ -111,7 +117,9 @@ function Watchlist() {
                   id: childSnapshot.key,
                   sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
                   sharesName: childSnapshot.val().sharesName,
-                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData
+                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData,
+                  riskStatus: childSnapshot.val().riskStatus,
+                  confidenceLevel: childSnapshot.val().confidenceLevel
                 })
               }
             })
