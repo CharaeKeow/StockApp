@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from 'react';
-import { ScrollView, Text, View, Dimensions, TouchableOpacity } from 'react-native';
+import { ScrollView, Text, View, Dimensions, TouchableOpacity, LogBox } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { VictoryPie, VictoryBar, VictoryAxis, VictoryChart } from "victory-native";
+import ImageView from 'react-native-image-view';
+
 import { firebase } from '../firebase/config';
 import styles from '../styles/Market.style';
-import ImageView from 'react-native-image-view';
+import MarketOverviewMalaysia from './MarketOverviewMalaysia';
 
 function array(param) {
   var values = new Array();
@@ -156,14 +158,20 @@ function Market() {
     })
   }, []); //run once on component load
 
-  const [visibleL, setVisibleL] = useState(false);
-  const [visibleG, setVisibleG] = useState(false);
+  useEffect(() => {
+    //to hide the yellowbox warning (issue with Animated nativeDriver), as per:
+    //https://stackoverflow.com/questions/61014661/animated-usenativedriver-was-not-specified-issue-of-reactnativebase-input
+    LogBox.ignoreLogs(['Animated: `useNativeDriver`']);
+  }, [])
+
+  const [visibleLocal, setVisibleLocal] = useState(false);
+  const [visibleGlobal, setVisibleGlobal] = useState(false);
 
   function onPressLocal() {
-    setVisibleL(true);
+    setVisibleLocal(true);
   }
   function onPressGlobal() {
-    setVisibleG(true);
+    setVisibleGlobal(true);
   }
 
   const AppButtonLocal = ({ title }) => (
@@ -177,7 +185,7 @@ function Market() {
     </TouchableOpacity>
   );
 
-  const imagesG = [
+  const imagesGlobal = [
     {
       source: {
         uri: urlGlobal,
@@ -187,7 +195,7 @@ function Market() {
       height: 720,
     },
   ];
-  const imagesL = [
+  const imagesLocal = [
     {
       source: {
         uri: urlLocal,
@@ -254,16 +262,16 @@ function Market() {
           </View>
 
           <ImageView
-            images={imagesG}
+            images={imagesGlobal}
             animationType="fade"
-            isVisible={visibleG}
-            onClose={() => { setVisibleG(false) }}
+            isVisible={visibleGlobal}
+            onClose={() => { setVisibleGlobal(false) }}
           />
           <ImageView
-            images={imagesL}
+            images={imagesLocal}
             animationType="fade"
-            isVisible={visibleL}
-            onClose={() => { setVisibleL(false) }}
+            isVisible={visibleLocal}
+            onClose={() => { setVisibleLocal(false) }}
           />
         </View>
 
@@ -304,44 +312,10 @@ function Market() {
             <Text style={{ textAlign: 'center', marginTop: 12, marginBottom: 15, fontWeight: '900', fontSize: 18 }}>Volume: {volume}</Text>
           </View>
 
+          {/*Malaysia's sector market section*/}
+          <MarketOverviewMalaysia />
 
-          <Text style={{ textAlign: 'center', marginTop: 15, fontWeight: 'bold', fontSize: 20 }}>Malaysia's Sectors</Text>
-          <View style={{ alignItems: 'center' }}>
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={{ marginTop: 18, marginBottom: -25 }}>
-                RE  :   REIT{'\n'}
-                            PP  :   Property{'\n'}
-                            UL  :   Ultilities{'\n'}
-                            HC :   Health Care{'\n'}
-              </Text>
-              <Text style={{ marginLeft: 12, marginTop: 18, marginBottom: -25 }}>
-                ER   :  Energy{'\n'}
-                            TN  :  Technology{'\n'}
-                            PT  :   Plantation{'\n'}
-                            CT  :   Construction{'\n'}
-              </Text>
-            </View>
-            <Text style={{ marginTop: 18, marginBottom: -18 }}>
-              FS    :    Financial Services{'\n'}
-                            CS   :    Consumers Products{'\n'}
-                            TL   :    Transportation & Logistics{'\n'}
-                            TM  :    Telecommunications & Media{'\n'}
-                            IP     :    Industrial Products & Services
-                          </Text>
-            <VictoryChart>
-              <VictoryBar
-                // horizontal
-                style={{ data: { fill: 'rgba(134, 65, 244, 0.8)' }/*({data}) => data >= 0 ? 'green' : 'red'}*/ }}
-                data={[0, 2, 5, 6, 3, 4, 7, 2, 5, 4, 7, 6, 8, 6]}
-                          /*labels={[,2,5,6,3,4,-7,2,5,4,7,6,8,6]}*/ />
-              <VictoryAxis
-                offsetX={190}
-                style={{ tickLabels: { fontWeight: 'bold', fontSize: 11, angle: 90 } }}
-                crossAxis={false}
-                tickValues={['CT', 'CS', 'ER', 'FS', 'HC', 'IP', 'PT', 'PP', 'RE', 'TN', 'TM', 'TL', 'UL']} />
-            </VictoryChart>
-          </View>
-
+          {/*Global market activity section*/}
           <Text style={{ marginTop: 30, textAlign: 'center', fontWeight: 'bold', fontSize: 20 }}>Global's Market Action</Text>
           <View style={{ marginBottom: 20, alignItems: 'center' }}>
             <Text style={{ marginTop: 18, marginBottom: -5 }}>
