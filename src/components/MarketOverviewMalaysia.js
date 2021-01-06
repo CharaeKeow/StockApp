@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
-import { VictoryPie, VictoryBar, VictoryAxis, VictoryChart } from "victory-native";
+import { VictoryBar, VictoryAxis, VictoryChart } from "victory-native";
 
 import { firebase } from '../firebase/config';
 
