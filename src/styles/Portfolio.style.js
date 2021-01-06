@@ -20,10 +20,12 @@ export default StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#fff',
     alignSelf: 'center',
+    shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, shadowRadius: 5, elevation: 4,
   },
   view: {
     flex: 1,
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     alignItems: 'center',
   },
   stockView: {
