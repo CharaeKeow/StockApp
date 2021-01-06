@@ -14,10 +14,12 @@ export default function Routes() {
 
     if (isMounted) {
 
-      firebase.auth().onAuthStateChanged(user => {
+      //firebase.auth().onAuthStateChanged(user => {
+      //why - because normal onAuthStateChanged only listen to signing in and out, but no token change such as verifiedEmail
+      firebase.auth().onIdTokenChanged(user => {
         if (user !== null) {
-          console.log('Email verified? ' + user.emailVerified)
-          if (user.emailVerified) {            //firebase.auth().onAuthStateChanged(authUser => {
+          if (user.emailVerified) {
+            //firebase.auth().onAuthStateChanged(authUser => {
             let authUser = firebase.auth().currentUser;
             /*
             if (user !== null) {
@@ -32,13 +34,14 @@ export default function Routes() {
             } catch (error) {
               console.log(error)
             }
+          } else {
+            setUser(null);
           }
         } else {
           console.log('user null?')
           setUser(null);
         }
-      }
-      )
+      })
     }
     return () => { isMounted = false };
   }); //run only if user change or during initial load

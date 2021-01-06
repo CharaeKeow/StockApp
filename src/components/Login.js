@@ -23,7 +23,6 @@ export default function Login({ navigation }) {
         } else {
           console.log('test first login');
           alert(`Hi ${res.user.displayName}. Welcome back 😄`);
-          firebase.auth().currentUser.reload();
         }
       }).catch((error) => console.log(error));
   }
