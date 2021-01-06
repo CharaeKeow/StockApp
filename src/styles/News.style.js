@@ -19,9 +19,13 @@ export default StyleSheet.create({
     shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, 
     shadowOpacity: 0.1, shadowRadius: 5, elevation: 4,
   },
-  detailsView: {
-    backgroundColor: '#fff',
-    margin: 10,
-    padding: 10,
+  view: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+  newsStack: {
+    paddingTop: 25,
+    backgroundColor: '#ffffff',
+  }
 })
