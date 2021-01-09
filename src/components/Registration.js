@@ -71,7 +71,7 @@ export default function Registration({ navigation }) {
         style={styles.keyboardAwareScrollView} keyboardShouldPersistTaps="always">
         <Image
           style={styles.logo}
-          source={require('../../assets/favicon.png')}
+          source={require('../../assets/i-SkyLyzer_logo.png')}
         />
         <TextInput
           style={styles.input}
@@ -118,7 +118,7 @@ export default function Registration({ navigation }) {
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text style={styles.footerText}>Already got an account?
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>Login</Text>
+            <Text onPress={onFooterLinkPress} style={styles.footerLink}> Login</Text>
           </Text>
         </View>
       </KeyboardAwareScrollView>
