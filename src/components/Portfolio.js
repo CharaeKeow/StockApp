@@ -75,7 +75,7 @@ const Item = ({ item, style, id }) => {
           <Text>EMA 50     : <Text> RM {item.ema50}</Text></Text>
           <Text>EMA 100  : <Text> RM {item.ema100}</Text></Text>
           <Text>EMA 200  : <Text> RM {item.ema200}</Text></Text>
-          <Text>SA Score  : <Text> {item.sentiValue*100}%</Text></Text>
+          <Text>SA Score  : <Text> {item.sentiValue * 100}%</Text></Text>
           <Text>BB Status : <Text> {item.bbStatus}</Text></Text>
         </View>
         <View style={{ paddingRight: 12, flex: 1 }}>
@@ -100,7 +100,7 @@ function Portfolio() {
   //For handling query to filter the stock listed in portfolio
   const [filteredData, setFilteredData] = useState([]);
   //array to keep list of portfolio fetch from Firebase
-  const [portfolioArr, setPortfolioArr] = useState(0);
+  const [portfolioArr, setPortfolioArr] = useState([]);
   const [newPortfolioRef, setNewPortfolioRef] = useState(null);
 
   useEffect(() => {
@@ -143,14 +143,95 @@ function Portfolio() {
             }).then(() => {
               if (portfolio !== null && portfolio !== undefined) { //ensure portfolio not null before set
                 setPortfolioArr(portfolio);
-                console.log(portfolioArr);
+                //console.log(portfolioArr);
+              } else {
+                setPortfolioArr([])
               }
             })
           })
         }
       }
+    });
+
+    firebase.database().ref('/users/' + uid + '/portfolio/').on('child_moved', () => {
+      userPortfolioListRef.on('value', (snapshot) => {
+        if (isMounted) {
+          let portfolio = [];
+          if (snapshot !== undefined && snapshot !== null) { //because this node has child === null
+            snapshot.forEach((child) => {
+              firebase.database().ref('/processedData/' + child.val()).once('value', (childSnapshot) => {
+                console.log('test')
+                if (childSnapshot.val() !== null && childSnapshot !== undefined) {
+                  portfolio.push({
+                    id: childSnapshot.key,
+                    bbStatus: childSnapshot.val().bbStatus,
+                    ema50: childSnapshot.val().ema50,
+                    ema100: childSnapshot.val().ema100,
+                    ema200: childSnapshot.val().ema200,
+                    sharesCurrPrice: childSnapshot.val().sharesCurrPrice,
+                    sentiValue: childSnapshot.val().sentiValue,
+                    sharesName: childSnapshot.val().sharesName,
+                    companyUrl: childSnapshot.val().companyurl,
+                    Days30ClosePriceData: childSnapshot.val().Days30ClosePriceData
+                  })
+                }
+              }).then(() => {
+                if (portfolio !== null && portfolio !== undefined) { //ensure portfolio not null before set
+                  setPortfolioArr(portfolio);
+                  //console.log(portfolioArr);
+                } else {
+                  setPortfolioArr([])
+                }
+              })
+            })
+          }
+        }
+      });
     })
-    return () => { isMounted = false };
+
+    /* Listening to when new data is added in processedData. If yes, it will fetch and display the data
+     */
+    firebase.database().ref('/processedData/').on('child_added', () => {
+      userPortfolioListRef.on('value', (snapshot) => {
+        if (isMounted) {
+          let portfolio = [];
+          if (snapshot !== undefined && snapshot !== null) { //because this node has child === null
+            snapshot.forEach((child) => {
+              firebase.database().ref('/processedData/' + child.val()).once('value', (childSnapshot) => {
+                console.log('test')
+                if (childSnapshot.val() !== null && childSnapshot !== undefined) {
+                  portfolio.push({
+                    id: childSnapshot.key,
+                    bbStatus: childSnapshot.val().bbStatus,
+                    ema50: childSnapshot.val().ema50,
+                    ema100: childSnapshot.val().ema100,
+                    ema200: childSnapshot.val().ema200,
+                    sharesCurrPrice: childSnapshot.val().sharesCurrPrice,
+                    sentiValue: childSnapshot.val().sentiValue,
+                    sharesName: childSnapshot.val().sharesName,
+                    companyUrl: childSnapshot.val().companyurl,
+                    Days30ClosePriceData: childSnapshot.val().Days30ClosePriceData
+                  })
+                }
+              }).then(() => {
+                console.log('Portfolio' + portfolio);
+                if (portfolio !== null && portfolio !== undefined) { //ensure portfolio not null before set
+                  setPortfolioArr(portfolio);
+                  //console.log(portfolioArr);
+                } else {
+                  setPortfolioArr([])
+                }
+              })
+            })
+          }
+        }
+      });
+
+    });
+    return () => {
+      isMounted = false;
+      //userPortfolioListRef.off('value', OnLoadingListener);
+    };
   }, []); //run useEffect as long as portfolioArr is null
 
   /*Handling search @TODO: Refactor this into a separate file to cleanup
@@ -211,6 +292,7 @@ function Portfolio() {
         style={styles.searchBar}
       />
       <View style={styles.stockView}>
+        {/*console.log(portfolioArr)*/}
         <FlatList
           //data={DATA}
           data={search === '' ? portfolioArr : filteredData}
