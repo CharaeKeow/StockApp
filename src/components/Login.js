@@ -21,9 +21,10 @@ export default function Login({ navigation }) {
         if (!res.user.emailVerified) {
           alert("Please verify your email first!");
         } else {
+          console.log('test first login');
           alert(`Hi ${res.user.displayName}. Welcome back 😄`);
         }
-    }).catch((error) => alert(error));
+      }).catch((error) => console.log(error));
   }
 
 

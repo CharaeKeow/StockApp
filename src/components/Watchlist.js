@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /* eslint-disable react/prop-types */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FlatList, TouchableOpacity, View, Text, Alert } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { SearchBar } from 'react-native-elements';
@@ -10,41 +10,31 @@ import * as shape from 'd3-shape';
 
 import { firebase } from '../firebase/config';
 import styles from '../styles/Watchlist.style';
+import { AuthUserContext } from '../firebase/context'; // to get user including id from context
 //import DetailsScreen from './WatchlistDetailsScreen';
+
 const uid = 'CF81IUxlLwMBIhvwpqrvm3ze0Mv2'; //temp. change later to get the signed in uid
 const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
 
 //for pressing item on the watchlist, which will trigger an alert
 //asking user to add item to portfolio or not
-const onPress = () => {
-  Alert.alert(
-    'ADD TO PROTFOLIO',
-    'Are you sure?', // <- this part is optional, you can pass an empty string
-    [
-      {
-        text: 'Yes', onPress: () => {
-          addToPortfolio(id) //add to firebase user's portfolio
-        }
-      }, // insert ADD TO PORTFOLIO function
-      { text: 'No', onPress: () => console.log('NO Pressed') },
-    ],
-    { cancelable: false },
-  );
-};
 
 const Item = ({ item, style, id }) => { //id is the stock id passed from Portfolio component
+  const { user, setUser } = useContext(AuthUserContext); //for getting the login user data
+  const [newPortfolioRef, setNewPortfolioRef] = useState(null); //this will auto generate key based on timestamp. prevent duplicate
   const [exist, setExist] = useState(false); //already exist in porfolio or not
+  //const [uid, setUid] = useState(null);
 
-  const newPortfolioRef = userPortfolioListRef.push(); //this will auto generate key based on timestamp. prevent duplicate
   const addToPortfolio = (id) => {
+    console.log(id);
     newPortfolioRef.set(
       id
-    )
+    );
   }
 
   //for pressing item on the watchlist, which will trigger an alert
   //asking user to add item to portfolio or not
-  const onPress = () => {
+  const handleClickItem = () => {
     Alert.alert(
       'ADD TO PROTFOLIO',
       'Are you sure?', // <- this part is optional, you can pass an empty string
@@ -62,6 +52,13 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
 
   //for checking if it's already added in portfolio
   React.useEffect(() => {
+    const user = firebase.auth().currentUser; //get id of current user
+    let uid;
+    if (user !== null) {
+      uid = user.uid;
+    }
+    const userPortfolioListRef = firebase.database().ref('/users/' + uid + '/portfolio');
+
     userPortfolioListRef.on('value', (snapshot) => {
       snapshot.forEach((child) => {
         if (child.val() === id) {
@@ -69,16 +66,18 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
         }
       })
     })
-  })
+    setNewPortfolioRef(userPortfolioListRef.push()); //set the new portfolio ref
+  }, [newPortfolioRef === null])
 
   return (
-    <TouchableOpacity onPress={onPress} style={[styles.item, style]} >
+    <TouchableOpacity onPress={handleClickItem} style={[styles.item, style]} >
       <View style={styles.container}>
-        <View style={{ flex: 15 }}>
-          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingTop: 11, paddingRight: 15 }} >{item.sharesName}</Text>
+        <View style={{ justifyContent: 'center', flex: 15 }}>
+          <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingRight: 15 }} >{item.sharesName}</Text>
+          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15, color: item.riskStatus >= 0 ? (item.riskStatus === 0 ? "orange" : "green") : "red" }} >Risk: {item.riskStatus}</Text>
         </View>
         <View style={{ flex: 10 }}>
-          <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice}</Text>
+          <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice.toFixed(3)}</Text>
         </View>
         <View style={{ flex: 10, paddingRight: 15 }}>
           <AreaChart
@@ -86,7 +85,7 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
             data={item.days30ClosePriceData.split(',').map(n => parseFloat(n * -1))}
             contentInset={{ top: 30, bottom: 30 }}
             curve={shape.curveNatural}
-            svg={{ fill: 'rgba(134, 65, 244, 0.8)'}}
+            svg={{ fill: 'rgba(134, 65, 244, 0.8)' }}
           >
           </AreaChart>
         </View>
@@ -95,8 +94,8 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
   );
 };
 
-function Watchlist({ navigation }) {
-  const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
+function Watchlist() {
+  //const [selectedId, setSelectedId] = useState([]); //for storing selected id on clicked flatlist
   const [search, setSearch] = useState(""); //for searchbar state
   const [watchlistArr, setWatchlistArr] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -118,7 +117,9 @@ function Watchlist({ navigation }) {
                   id: childSnapshot.key,
                   sharesCurrentPrice: childSnapshot.val().sharesCurrPrice,
                   sharesName: childSnapshot.val().sharesName,
-                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData
+                  days30ClosePriceData: childSnapshot.val().days30ClosePriceData,
+                  riskStatus: childSnapshot.val().riskStatus,
+                  confidenceLevel: childSnapshot.val().confidenceLevel
                 })
               }
             })
@@ -130,7 +131,7 @@ function Watchlist({ navigation }) {
       }
     })
     return () => { isMounted = false };
-  }, [watchlistArr === null]) //run as long as watchlistArr is null
+  }, []) //run as long as watchlistArr is null
 
   //For handling query to filter the watchlist queried from Firebase
   const handleSearch = (text) => {
@@ -140,13 +141,13 @@ function Watchlist({ navigation }) {
     })
     //console.log(filteredData);
     setFilteredData(filteredData); //set filtered data into new data to be passed into Flatlist
-    console.log(watchlistArr);
+    //console.log(watchlistArr);
     setSearch(text); //contains the input in search box
   }
 
   const contains = ({ sharesName }, query) => {
     //destructuring sharesName from shares
-    console.log(sharesName)
+    //console.log(sharesName)
     if (sharesName.toLowerCase().includes(query)) {
       return true; //true if found
     }
@@ -181,12 +182,13 @@ function Watchlist({ navigation }) {
         style={styles.searchBar}
       />
       <View style={styles.stockView}>
+
         <FlatList
           //data={DATA}
           data={search === '' ? watchlistArr : filteredData}
           renderItem={renderItem}
           keyExtractor={item => item.id}
-          extraData={selectedId}
+        //extraData={selectedId}
         />
       </View>
     </View>
