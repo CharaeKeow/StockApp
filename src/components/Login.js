@@ -35,7 +35,7 @@ export default function Login({ navigation }) {
         keyboardShouldPersistTaps='always'>
         <Image
           style={styles.logo}
-          source={require('../../assets/favicon.png')} />
+          source={require('../../assets/i-SkyLyzer_logo.png')} />
         <TextInput //email
           style={styles.input}
           placeholder="E-mail"
@@ -62,7 +62,7 @@ export default function Login({ navigation }) {
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text style={styles.footerText}>Don't have an account?
-          <Text onPress={onFooterLinkPress} style={styles.footerLink}>Sign Up</Text>
+          <Text onPress={onFooterLinkPress} style={styles.footerLink}> Sign Up</Text>
           </Text>
         </View>
       </KeyboardAwareScrollView>

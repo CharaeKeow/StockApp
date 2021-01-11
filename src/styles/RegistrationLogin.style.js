@@ -4,7 +4,8 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    marginTop:60
   },
   keyboardAwareScrollView: {
     flex: 1,
@@ -12,10 +13,12 @@ export default StyleSheet.create({
   },
   logo: {
     flex: 1,
-    height: 60,
-    width: 60,
+    width: 200,
+    height: 200,
+    marginTop:-20,
+    marginBottom:20,
+    resizeMode: 'contain',
     alignSelf: 'center',
-    margin: 25
   },
   input: {
     height: 48,
@@ -46,7 +49,7 @@ export default StyleSheet.create({
   footerView: {
     flex: 1,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 20
   },
   footerText: {
     fontSize: 16,

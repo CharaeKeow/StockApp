@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, Dimensions, TouchableOpacity, LogBox } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { VictoryPie, VictoryBar, VictoryAxis, VictoryChart } from "victory-native";
+import { VictoryPie } from "victory-native";
 import ImageView from 'react-native-image-view';
 
 import { firebase } from '../firebase/config';
