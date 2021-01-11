@@ -52,8 +52,8 @@ const Item = ({ item, style, id }) => {
   //long pressing will remove item from portfolio
   const handlerLongClick = () => {
     Alert.alert(
-      'DELETE',
-      'Are you sure?', // <- this part is optional, you can pass an empty string
+      'Deleting stock',
+      'Confirm removing stock from Portfolio?', // <- this part is optional, you can pass an empty string
       [
         {
           text: 'Yes', onPress: () => {
