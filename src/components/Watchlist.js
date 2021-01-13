@@ -41,7 +41,8 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
       [
         {
           text: 'Yes', onPress: () => {
-            addToPortfolio(id) //add to firebase user's portfolio
+            exist ?  //add to firebase user's portfolio
+              alert(`The stock is already in portfolio`) : addToPortfolio(id)
           }
         }, // insert ADD TO PORTFOLIO function
         { text: 'No', onPress: () => console.log('NO Pressed') },
