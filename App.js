@@ -1,6 +1,5 @@
 /* eslint-disable react/display-name */
-import React, { useEffect, useContext } from 'react';
-import { Text, View } from 'react-native';
+import React, { useEffect } from 'react';
 import { MenuProvider } from 'react-native-popup-menu';
 import TimerErrorHandler from './src/utils/TimerErrorHandler';
 
@@ -8,15 +7,6 @@ import Providers from './src/navigation';
 import { firebase } from './src/firebase/config'
 
 TimerErrorHandler();
-
-function SplashScreen() {
-  return (
-    <View>
-      <Text>Loading...</Text>
-    </View>
-  );
-}
-
 
 export default function App() {
   useEffect(() => {
