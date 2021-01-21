@@ -2,7 +2,7 @@ import firebase from 'firebase';
 import '@firebase/auth';
 import '@firebase/database'
 
-/* personal Firebase config. Just for testing
+/* example of firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDB0RNnAaWYekvRuHqCBigUZLyVMfjGN34",
   authDomain: "react-native-firebase-d7ca7.firebaseapp.com",
