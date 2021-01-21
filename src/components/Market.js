@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, Text, View, Dimensions, TouchableOpacity, LogBox } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { VictoryPie, VictoryBar, VictoryAxis, VictoryChart } from "victory-native";
+import { VictoryPie } from "victory-native";
 import ImageView from 'react-native-image-view';
 
 import { firebase } from '../firebase/config';
@@ -138,8 +138,9 @@ function Market() {
         uri: urlGlobal,
       },
       title: 'Global',
-      width: 806,
-      height: 720,
+      //width: 806, //removing width make it scale nicely on screen
+      //height: 720,
+      resizeMode: 'contain'
     },
   ];
   const imagesLocal = [
@@ -148,8 +149,9 @@ function Market() {
         uri: urlLocal,
       },
       title: 'Local',
-      width: 806,
-      height: 720,
+      //width: 806,
+      //height: 720,
+      resizeMode: 'contain'
     },
   ];
 
@@ -210,12 +212,14 @@ function Market() {
 
           <ImageView
             images={imagesGlobal}
+            style={styles.img}
             animationType="fade"
             isVisible={visibleGlobal}
             onClose={() => { setVisibleGlobal(false) }}
           />
           <ImageView
             images={imagesLocal}
+            style={styles.img}
             animationType="fade"
             isVisible={visibleLocal}
             onClose={() => { setVisibleLocal(false) }}

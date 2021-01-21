@@ -36,12 +36,13 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
   //asking user to add item to portfolio or not
   const handleClickItem = () => {
     Alert.alert(
-      'ADD TO PROTFOLIO',
-      'Are you sure?', // <- this part is optional, you can pass an empty string
+      'Adding Stock',
+      'Confirm adding stock to Portfolio?', // <- this part is optional, you can pass an empty string
       [
         {
           text: 'Yes', onPress: () => {
-            addToPortfolio(id) //add to firebase user's portfolio
+            exist ?  //add to firebase user's portfolio
+              alert(`The stock is already in portfolio`) : addToPortfolio(id)
           }
         }, // insert ADD TO PORTFOLIO function
         { text: 'No', onPress: () => console.log('NO Pressed') },
@@ -69,12 +70,27 @@ const Item = ({ item, style, id }) => { //id is the stock id passed from Portfol
     setNewPortfolioRef(userPortfolioListRef.push()); //set the new portfolio ref
   }, [newPortfolioRef === null])
 
+  function riskColor(riskValue) {
+    if (riskValue >= -5 && riskValue <= 5) {
+      return 'orange';
+    }
+
+    if (riskValue > 5) {
+      if (riskValue > 70) { return 'red'; }
+      else { return 'green'; }
+    }
+
+    if (riskValue < -5) {
+      return 'red';
+    }
+  }
+
   return (
     <TouchableOpacity onPress={handleClickItem} style={[styles.item, style]} >
       <View style={styles.container}>
         <View style={{ justifyContent: 'center', flex: 15 }}>
           <Text style={{ textAlign: 'center', fontSize: 17, fontWeight: "bold", paddingRight: 15 }} >{item.sharesName}</Text>
-          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15, color: item.riskStatus >= 0 ? (item.riskStatus === 0 ? "orange" : "green") : "red" }} >Risk: {item.riskStatus}</Text>
+          <Text style={{ textAlign: 'center', fontSize: 15, paddingRight: 15, color: riskColor(item.riskStatus) }}>Risk: {item.riskStatus}%</Text>
         </View>
         <View style={{ flex: 10 }}>
           <Text style={{ fontSize: 15, fontWeight: "bold", paddingLeft: 6, paddingTop: 11, color: 'green' }}>{"RM " + item.sharesCurrentPrice.toFixed(3)}</Text>
